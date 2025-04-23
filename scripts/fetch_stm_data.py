@@ -1,26 +1,12 @@
-from custom_functions import export_to_csv
+from custom_functions import data_dir, export_to_csv, logger, root_dir
 from datetime import datetime, UTC
 from dotenv import load_dotenv
 from google.transit import gtfs_realtime_pb2
-import logging
 import os
-from pathlib import Path
 import requests
 import time
 
-script_start_time = time.time()
-
-root_dir = Path(__file__).parent.resolve()
-log_file = os.path.join(root_dir, 'stm_api_errors.log')
-csv_path = os.path.join(root_dir, 'data', 'fetched_stm.csv')
-
-# Logger
-logger = logging.getLogger('stm.delay_prediction')
-logging.basicConfig(
-  filename=log_file,
-  level=logging.INFO,
-  format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-  datefmt='%Y-%m-%d %H:%M:%S')
+csv_path = os.path.join(root_dir, data_dir, 'fetched_stm.csv')
 
 # API KEY
 load_dotenv()
@@ -61,8 +47,8 @@ for attempt in range(1, max_retries + 1):
             'route_id': trip.route_id,
             'start_date': trip.start_date,
             'stop_id': stop_time_update.stop_id,
-            'arrival_time': stop_time_update.arrival.time, # planned time
-            'departure_time': stop_time_update.departure.time, # actual time
+            'arrival_time': stop_time_update.arrival.time,
+            'departure_time': stop_time_update.departure.time,
             'schedule_relationship': stop_time_update.schedule_relationship,
         })
       
@@ -75,5 +61,3 @@ for attempt in range(1, max_retries + 1):
     time.sleep(wait)
 else:
   logger.error('All retry attempts failed. Consider logging the error or alerting the system administrator.')
-
-logger.info(f'Execution time: {time.time() - script_start_time} seconds')

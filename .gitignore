@@ -1,4 +1,5 @@
 __pycache__
+data
 .DS_Store
 .env
 stm_api_errors.log

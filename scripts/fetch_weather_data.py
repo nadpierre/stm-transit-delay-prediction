@@ -1,15 +1,13 @@
-from custom_functions import export_to_csv
+from custom_functions import data_dir, export_to_csv, root_dir
 from datetime import datetime, UTC
 import os
-from pathlib import Path
 import requests
 
 # Coordinates for Montreal
 latitude = 45.5019
 longitude = -73.5674
 
-root_dir = Path(__file__).parent.resolve()
-csv_path = os.path.join(root_dir, 'data', 'fetched_weather.csv')
+csv_path = os.path.join(root_dir, data_dir, 'fetched_weather.csv')
 
 # Get current time in UTC
 current_time = datetime.now(UTC)
