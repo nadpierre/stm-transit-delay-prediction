@@ -56,7 +56,7 @@ for attempt in range(1, max_retries + 1):
       
         # Store the trip update and weather data in the list
         trip_updates.append({
-            'current_time': current_time.isoformat(),
+            'current_time': current_time.timestamp(),
             'trip_id': trip.trip_id,
             'route_id': trip.route_id,
             'start_date': trip.start_date,

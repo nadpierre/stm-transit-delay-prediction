@@ -36,7 +36,7 @@ if 'hourly' in data.keys():
   weathercode = data['hourly']['weathercode'][current_hour_index]
 
   weather_list.append({
-    'current_time': start_time.isoformat(),
+    'current_time': current_time.timestamp(),
     'temperature': temperature,
     'precipitation': precipitation,
     'windspeed': windspeed,
