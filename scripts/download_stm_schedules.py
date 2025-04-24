@@ -3,6 +3,7 @@ from datetime import datetime
 from glob import glob
 import os
 from pathlib import Path
+import re
 import requests
 import zipfile
 
@@ -36,16 +37,18 @@ if response.ok:
   logger.info('Deleting %s', zip_file_path)
   os.remove(zip_file_path)
 
-  # Delete unrelevant text files
   txt_files = glob(os.path.join(dest_folder, '*.txt'))
+  txt_files = [path for path in txt_files if re.search(r'[a-z_]+\.txt', path)]
+
   for file_path in txt_files:
-    if Path(file_path).stem != 'stop_times':
-      os.remove(file_path)
-  
-  # Add date to stop_times.txt
-  old_path = os.path.join(dest_folder, 'stop_times.txt')
-  new_path = os.path.join(dest_folder, f'stop_times_{current_date}.txt')
-  os.rename(old_path, new_path)
+    stem = Path(file_path).stem
+    basename = os.path.basename(file_path)
+    if (stem not in ['stops', 'stop_times']):
+      os.remove(file_path) # Delete unrelevant text files
+    else: # Add date to stops.txt and stop_times.txt
+      old_path = os.path.join(dest_folder, basename)
+      new_path = os.path.join(dest_folder, f'{stem}_{current_date}.txt')
+      os.rename(old_path, new_path)
 
 else:
   logger.error('Download failed: status code %s\n%s', [response.status_code, response.text])
