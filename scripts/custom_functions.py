@@ -3,12 +3,7 @@ import os
 import pandas as pd
 from pathlib import Path
 
-SCHEDULE_RELATIONSHIP = {
-  0: 'SCHEDULED',
-  1: 'SKIPPED'
-}
-
-WEATHER_CODE = {
+WEATHER_CODES = {
   0: 'Clear sky',
   1: 'Mainly clear',
   2: 'Partly cloudy',

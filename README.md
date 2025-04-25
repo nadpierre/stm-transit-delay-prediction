@@ -9,6 +9,8 @@ Downloaded Scheduled GTFS (updated weekly)
 
 ## Libraries Used
 
+- holidays
+- numpy
 - pandas
 - protobuf
 - requests
