@@ -44,6 +44,7 @@ if response.ok:
     stem = Path(file_path).stem
     basename = os.path.basename(file_path)
     if (stem not in ['routes', 'stops', 'stop_times']):
+      logger.info('Deleting %s', basename)
       os.remove(file_path) # Delete unrelevant text files
     else: # Add date to stops.txt and stop_times.txt
       old_path = os.path.join(dest_folder, basename)

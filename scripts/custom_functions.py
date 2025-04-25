@@ -3,6 +3,8 @@ import os
 import pandas as pd
 from pathlib import Path
 
+LOCAL_TIMEZONE = 'Canada/Eastern'
+
 WEATHER_CODES = {
   0: 'Clear sky',
   1: 'Mainly clear',
