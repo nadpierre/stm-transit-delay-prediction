@@ -1,13 +1,9 @@
-from custom_functions import data_dir, export_to_csv, root_dir
+from custom_functions import data_dir, export_to_csv, root_dir, MTL_COORDS
 from datetime import datetime, timedelta, UTC
 import os
 import requests
 
-# Coordinates for Montreal
-latitude = 45.5019
-longitude = -73.5674
-
-csv_path = os.path.join(root_dir, data_dir, 'fetched_weather.csv')
+csv_path = os.path.join(root_dir, data_dir, 'fetched_historical_weather.csv')
 
 # Get current time in UTC
 current_time = datetime.now(UTC)
@@ -15,7 +11,7 @@ three_days_before = current_time - timedelta(days=3)
 
 weather_url = (
     f'https://archive-api.open-meteo.com/v1/archive?'
-    f'latitude={latitude}&longitude={longitude}'
+    f'latitude={MTL_COORDS['latitude']}&longitude={MTL_COORDS['longitude']}'
     f'&hourly=temperature_2m,precipitation,windspeed_10m,weathercode'
     f'&start_date={three_days_before.date()}&end_date={three_days_before.date()}'
     f'&timezone=America%2FToronto'

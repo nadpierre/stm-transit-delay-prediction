@@ -5,6 +5,11 @@ from pathlib import Path
 
 LOCAL_TIMEZONE = 'Canada/Eastern'
 
+MTL_COORDS = {
+  'latitude': 45.5019,
+  'longitude':  -73.5674
+}
+
 WEATHER_CODES = {
   0: 'Clear sky',
   1: 'Mainly clear',
