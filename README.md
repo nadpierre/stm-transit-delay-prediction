@@ -30,6 +30,8 @@ SHAP (SHapley Additive exPlanations) values are a method from game theory to exp
 Ideally 30 min but too much data to handle (add this to presentation)
 Model is overfitted to late april and early may. It would have been ideal to collect data all year
 If collected all year, another feature to add would be if it's a holiday
+Add traffic data
+Add events
 Time-series analysis?
 
 ## Featured Deliverables

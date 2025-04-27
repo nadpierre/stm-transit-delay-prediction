@@ -2,6 +2,7 @@ import logging
 import os
 import pandas as pd
 from pathlib import Path
+import requests
 
 LOCAL_TIMEZONE = 'Canada/Eastern'
 
@@ -59,3 +60,32 @@ def export_to_csv(dict_list:list, csv_path:str) -> None:
     df.to_csv(csv_path, index=False)
   else:
     df.to_csv(csv_path, index=False, header=False, mode='a')
+
+def fetch_weather(start_date:str, end_date:str, forecast:bool=False) -> list:
+  root_url = 'https://archive-api.open-meteo.com/v1/archive?' \
+    if forecast == False else 'https://api.open-meteo.com/v1/forecast?' 
+  
+  weather_url = (
+    f'{root_url}'
+    f'latitude={MTL_COORDS['latitude']}&longitude={MTL_COORDS['longitude']}'
+    f'&hourly=temperature_2m,precipitation,windspeed_10m,weathercode'
+    f'&start_date={start_date}&end_date={end_date}'
+    f'&timezone=America%2FToronto'
+  )
+  
+  weather_list = []
+  response = requests.get(weather_url)
+
+  if response.ok :
+    data = response.json()
+    if 'hourly' in data.keys():
+      for i in range(len(data['hourly']['time'])):
+        weather_list.append({
+          'time': data['hourly']['time'][i],
+          'temperature': data['hourly']['temperature_2m'][i],
+          'precipitation': data['hourly']['precipitation'][i],
+          'windspeed': data['hourly']['windspeed_10m'][i],
+          'weathercode': data['hourly']['weathercode'][i]
+      })
+        
+  return weather_list
