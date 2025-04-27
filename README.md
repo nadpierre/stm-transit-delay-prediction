@@ -14,7 +14,6 @@ Downloaded Scheduled GTFS (updated weekly)
 - pandas
 - protobuf
 - requests
-- shap
 - sklearn
 - xgboost
 
