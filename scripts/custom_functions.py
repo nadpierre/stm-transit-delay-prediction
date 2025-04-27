@@ -11,6 +11,30 @@ MTL_COORDS = {
   'longitude':  -73.5674
 }
 
+INCIDENT_CATEGORIES = {
+    0: 'Unknown',
+    1: 'Accident',
+    2: 'Fog',
+    3: 'DangerousConditions',
+    4: 'Rain',
+    5: 'Ice',
+    6: 'Jam',
+    7: 'LaneClosed',
+    8: 'RoadClosed',
+    9: 'RoadWorks',
+    10: 'Wind',
+    11: 'Flooding',
+    14: 'BrokenDownVehicle'
+}
+
+MAGNITUDE_OF_DELAY = {
+  0: 'Unknown',
+  1: 'Minor',
+  2: 'Moderate',
+  3: 'Major',
+  4: 'Undefined'
+}
+
 WEATHER_CODES = {
   0: 'Clear sky',
   1: 'Mainly clear',
@@ -51,7 +75,7 @@ logger = logging.getLogger('stm.delay_prediction')
 logging.basicConfig(
   filename=log_file,
   level=logging.INFO,
-  format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+  format='%(asctime)s %(name)s [%(levelname)s] %(message)s',
   datefmt='%Y-%m-%d %H:%M:%S')
 
 def export_to_csv(dict_list:list, csv_path:str) -> None:
