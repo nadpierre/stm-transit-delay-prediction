@@ -10,12 +10,13 @@ Real-time and Scheduled General Transit Feed Specification (GTFS) from API
 
 ## Libraries Requirements
 
-- geopy
+- haversine
 - matplotlib
 - numpy
 - pandas
 - protobuf
 - requests
+- seaborn
 - sklearn
 - xgboost
 
@@ -32,10 +33,10 @@ Mean decrease in inpurity (MDI)
 
 Model is overfitted to late april and early may. It would have been ideal to collect data all year
 If collected all year, another feature to add would be if it's a holiday
-Add traffic data
 Add events
 Time-series analysis?
 Deep learning?
+Cross-validate incident distance window
 
 ## Featured Deliverables
 

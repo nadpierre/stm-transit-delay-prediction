@@ -22,6 +22,12 @@ INCIDENT_CATEGORIES = {
 
 LOCAL_TIMEZONE = 'Canada/Eastern'
 
+STOP_TYPE = {
+  0: 'Regular bus stop',
+  1: 'Parent metro station',
+  2: 'Bus top near metro'
+}
+
 MAGNITUDE_OF_DELAY = {
   0: 'Unknown',
   1: 'Minor',
