@@ -6,7 +6,7 @@ import os
 import requests
 import time
 
-csv_path = os.path.join(root_dir, data_dir, 'fetched_stm.csv')
+csv_path = os.path.join(root_dir, data_dir, 'fetched_stm_trip_updates.csv')
 
 # API KEY
 load_dotenv()
@@ -36,8 +36,6 @@ for attempt in range(1, max_retries + 1):
       for stop_time_update in entity.trip_update.stop_time_update:
 
         # Get timestamp and convert to datetime
-        timestamp = stop_time_update.arrival.time
-        trip_time = datetime.fromtimestamp(timestamp, UTC)
         current_time = datetime.now(UTC)
       
         # Store the trip update and weather data in the list

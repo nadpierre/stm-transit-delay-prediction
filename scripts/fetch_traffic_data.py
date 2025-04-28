@@ -35,8 +35,7 @@ response = requests.get(url=url, headers=headers)
 
 if response.ok:
     data = response.json()
-    logger.info('Tomtom Traffic API response: %s', data)
-
+    
     incidents = []
 
     if 'incidents' in data.keys():

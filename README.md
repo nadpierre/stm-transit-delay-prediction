@@ -3,13 +3,14 @@
 ## Dataset
 
 [STM Developers](https://www.stm.info/en/about/developers)
-Real-time General Transit Feed Specification (GTFS) from API
-Downloaded Scheduled GTFS (updated weekly)
+Real-time and Scheduled General Transit Feed Specification (GTFS) from API
+[GTFS Documentation](https://gtfs.org/documentation/realtime/feed-entities/vehicle-positions/)
 [Weather Forecast API](https://open-meteo.com/en/docs)
 [Tomtom Traffic API](https://developer.tomtom.com/)
 
 ## Libraries Requirements
 
+- geopy
 - matplotlib
 - numpy
 - pandas

@@ -4,13 +4,6 @@ import pandas as pd
 from pathlib import Path
 import requests
 
-LOCAL_TIMEZONE = 'Canada/Eastern'
-
-MTL_COORDS = {
-  'latitude': 45.5019,
-  'longitude':  -73.5674
-}
-
 INCIDENT_CATEGORIES = {
     0: 'Unknown',
     1: 'Accident',
@@ -27,12 +20,29 @@ INCIDENT_CATEGORIES = {
     14: 'BrokenDownVehicle'
 }
 
+LOCAL_TIMEZONE = 'Canada/Eastern'
+
 MAGNITUDE_OF_DELAY = {
   0: 'Unknown',
   1: 'Minor',
   2: 'Moderate',
   3: 'Major',
   4: 'Undefined'
+}
+
+MTL_COORDS = {
+  'latitude': 45.5019,
+  'longitude':  -73.5674
+}
+
+OCCUPANCY_STATUS = {
+  1: 'Empty',
+  2: 'Many seats available',
+  3: 'Few seats available',
+  4: 'Standing room only',
+  5: 'Crushed standing room only',
+  6: 'Full',
+  7: 'Not accepting passengers'
 }
 
 WEATHER_CODES = {
@@ -64,6 +74,12 @@ WEATHER_CODES = {
   95: 'Slight or moderate thunderstorm',
   96: 'Thunderstorm with slight hail',
   99: 'Thunderstorm with heavy hail'
+}
+
+STOP_STATUS = {
+  1: 'incoming_at',
+  2: 'stopped_at',
+  3: 'in_transit_to'
 }
 
 root_dir = Path(__file__).parent.parent.resolve()
