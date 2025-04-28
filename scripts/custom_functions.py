@@ -1,4 +1,5 @@
 import logging
+import numpy as np
 import os
 import pandas as pd
 from pathlib import Path
@@ -17,7 +18,8 @@ INCIDENT_CATEGORIES = {
     9: 'RoadWorks',
     10: 'Wind',
     11: 'Flooding',
-    14: 'BrokenDownVehicle'
+    14: 'BrokenDownVehicle',
+    99: None,
 }
 
 LOCAL_TIMEZONE = 'Canada/Eastern'
