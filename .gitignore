@@ -3,3 +3,4 @@ data
 .DS_Store
 .env
 stm_api_errors.log
+models/rf_model.pkl

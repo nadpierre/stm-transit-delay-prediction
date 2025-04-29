@@ -18,8 +18,7 @@ INCIDENT_CATEGORIES = {
     9: 'RoadWorks',
     10: 'Wind',
     11: 'Flooding',
-    14: 'BrokenDownVehicle',
-    99: None,
+    14: 'BrokenDownVehicle'
 }
 
 LOCAL_TIMEZONE = 'Canada/Eastern'
