@@ -40,6 +40,9 @@ Classification model
 
 ### Import Data (to be completed)
 
+- Create data directory
+- Create models directory
+
 ### Project Installation
 
 1. Clone the repository
@@ -53,6 +56,7 @@ Classification model
 
 2. Create a virtual environment
    ```
+   cd stm-transit-delay-prediction
    python<version> -m venv <virtual-environment-name>
    ```
 3. Activate the virtual environment

@@ -1,24 +1,23 @@
 import logging
-import numpy as np
 import os
 import pandas as pd
 from pathlib import Path
 import requests
 
 INCIDENT_CATEGORIES = {
-    0: 'Unknown',
-    1: 'Accident',
-    2: 'Fog',
-    3: 'DangerousConditions',
-    4: 'Rain',
-    5: 'Ice',
-    6: 'Jam',
-    7: 'LaneClosed',
-    8: 'RoadClosed',
-    9: 'RoadWorks',
-    10: 'Wind',
-    11: 'Flooding',
-    14: 'BrokenDownVehicle'
+  0: 'Unknown',
+  1: 'Accident',
+  2: 'Fog',
+  3: 'DangerousConditions',
+  4: 'Rain',
+  5: 'Ice',
+  6: 'Jam',
+  7: 'LaneClosed',
+  8: 'RoadClosed',
+  9: 'RoadWorks',
+  10: 'Wind',
+  11: 'Flooding',
+  14: 'BrokenDownVehicle'
 }
 
 LOCAL_TIMEZONE = 'Canada/Eastern'

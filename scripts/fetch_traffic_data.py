@@ -1,8 +1,7 @@
-from custom_functions import data_dir, export_to_csv, logger, root_dir
+from custom_functions import data_dir, export_to_csv, root_dir
 from dotenv import load_dotenv
 import os
 import requests
-import json
 
 csv_path = os.path.join(root_dir, data_dir, 'fetched_traffic.csv')
 
