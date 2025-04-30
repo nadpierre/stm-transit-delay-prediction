@@ -114,7 +114,7 @@ def fetch_weather(start_date:str, end_date:str, forecast:bool=False) -> list:
   
   weather_url = (
     f'{root_url}'
-    f'latitude={MTL_COORDS['latitude']}&longitude={MTL_COORDS['longitude']}'
+    f'latitude={MTL_COORDS["latitude"]}&longitude={MTL_COORDS["longitude"]}'
     f'&hourly=temperature_2m,precipitation,windspeed_10m,weathercode'
     f'&start_date={start_date}&end_date={end_date}'
     f'&timezone=America%2FToronto'
