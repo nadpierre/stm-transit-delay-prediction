@@ -23,7 +23,7 @@ headers = {'accept': 'application/json'}
 url = (
     f'https://api.tomtom.com'
     f'/traffic/services/{TOMTOM_VERSION_NUMBER}/incidentDetails?'
-    f'key={API_KEY}&bbox={MTL_BBOX['minLon']},{MTL_BBOX['minLat']},{MTL_BBOX['maxLon']},{MTL_BBOX['maxLat']}'
+    f'key={API_KEY}&bbox={MTL_BBOX["minLon"]},{MTL_BBOX["minLat"]},{MTL_BBOX["maxLon"]},{MTL_BBOX["maxLat"]}'
     f'&fields=%7Bincidents%7Bgeometry%7Bcoordinates%7D%2Cproperties%7BiconCategory%2CstartTime%2CendTime%2Clength%2CmagnitudeOfDelay%2Cdelay%2ClastReportTime%7D%7D%7D'
     f'&language=en-US'
     f'&categoryFilter=0%2C1%2C2%2C3%2C4%2C5%2C6%2C7%2C8%2C9%2C10%2C11%2C14'

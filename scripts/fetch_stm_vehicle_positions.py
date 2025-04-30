@@ -1,5 +1,5 @@
 from custom_functions import data_dir, export_to_csv, logger, root_dir
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from dotenv import load_dotenv
 from google.transit import gtfs_realtime_pb2
 import os
@@ -31,7 +31,7 @@ for attempt in range(1, max_retries + 1):
     positions = []
 
     for entity in feed.entity:
-      current_time = datetime.now(UTC)
+      current_time = datetime.now(timezone.utc)
       vehicle_id = entity.vehicle.vehicle.id
       trip_id = entity.vehicle.trip.trip_id
       route_id = entity.vehicle.trip.route_id
