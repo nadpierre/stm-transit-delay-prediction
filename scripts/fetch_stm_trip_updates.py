@@ -1,4 +1,4 @@
-from custom_functions import data_dir, export_to_csv, logger, root_dir
+from custom_functions import api_dir, data_dir, export_to_csv, logger, root_dir
 from datetime import datetime, timezone
 from dotenv import load_dotenv
 from google.transit import gtfs_realtime_pb2
@@ -6,7 +6,7 @@ import os
 import requests
 import time
 
-csv_path = os.path.join(root_dir, data_dir, 'fetched_stm_trip_updates.csv')
+csv_path = os.path.join(root_dir, data_dir, api_dir, 'fetched_stm_trip_updates.csv')
 
 # API KEY
 load_dotenv()

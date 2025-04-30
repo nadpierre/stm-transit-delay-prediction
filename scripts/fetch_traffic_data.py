@@ -1,9 +1,9 @@
-from custom_functions import data_dir, export_to_csv, root_dir
+from custom_functions import api_dir, data_dir, export_to_csv, root_dir
 from dotenv import load_dotenv
 import os
 import requests
 
-csv_path = os.path.join(root_dir, data_dir, 'fetched_traffic.csv')
+csv_path = os.path.join(root_dir, data_dir, api_dir, 'fetched_traffic.csv')
 
 TOMTOM_VERSION_NUMBER = 5
 

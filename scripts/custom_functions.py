@@ -90,6 +90,8 @@ STOP_STATUS = {
 
 root_dir = Path(__file__).parent.parent.resolve()
 data_dir = 'data'
+api_dir = 'api'
+download_dir = 'download'
 log_file = os.path.join(root_dir, 'stm_api_errors.log')
 
 # Logger

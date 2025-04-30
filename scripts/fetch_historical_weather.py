@@ -1,8 +1,8 @@
-from custom_functions import data_dir, export_to_csv, fetch_weather, root_dir
+from custom_functions import api_dir, data_dir, export_to_csv, fetch_weather, root_dir
 from datetime import datetime, timedelta, timezone
 import os
 
-csv_path = os.path.join(root_dir, data_dir, 'fetched_historical_weather.csv')
+csv_path = os.path.join(root_dir, data_dir, api_dir, 'fetched_historical_weather.csv')
 
 # Get current time in UTC
 current_time = datetime.now(timezone.utc)

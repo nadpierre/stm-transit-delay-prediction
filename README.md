@@ -1,5 +1,7 @@
 # STM Transit Delay Prediction
 
+## Introduction
+
 ## Description (to be completed)
 
 ## Dataset (to be completed)
@@ -9,26 +11,22 @@ Real-time and Scheduled General Transit Feed Specification (GTFS) from API
 [Weather Forecast API](https://open-meteo.com/en/docs)
 [Tomtom Traffic API](https://developer.tomtom.com/)
 
+Trip updates and vehicle positions were collected from April 27th to May 11th.
+
 ## Methods & Models (to be completed)
 
-Collecting every hour from late april to early may (at least 2 weeks)
-Ideally 30 min but too much data to handle (add this to presentation)
-
-Don't have access to official historical data, separated dataset in 2 past (past and current)
+Don't have access to official historical data, separated dataset in 2 parts (past and current)
 
 Mean decrease in inpurity (MDI)
 
 ## Results (to be completed)
 
-## Future work (to be completed)
+## Future Improvements (to be completed)
 
-Model is overfitted to late april and early may. It would have been ideal to collect data all year
+Model is overfitted to the time period the data was collected. It would have been ideal to collect data all year
 If collected all year, another feature to add would be if it's a holiday
-Add events
-Time-series analysis?
-Deep learning?
-Cross-validate incident distance window
-Classification model
+Add events (concerts, festivals, sports events)
+Cross-validate incident distance window (currently 500 meters)
 
 ## Featured Deliverables (to be completed)
 
@@ -59,6 +57,7 @@ Classification model
    cd stm-transit-delay-prediction
    python<version> -m venv <virtual-environment-name>
    ```
+   Note: the python version used in this project is 3.13.
 3. Activate the virtual environment
 
 - Activate the virtual environment based on your operating system
@@ -94,10 +93,12 @@ To run some of the scripts of this project you need an API key from STM Develope
 
 1. Get API keys:
 
-- Visit this [STM page](https://www.stm.info/en/about/developers/faq-new-api-hub) and this [Tom Tom page](https://developer.tomtom.com/knowledgebase/platform/articles/how-to-get-an-tomtom-api-key/).
+- Visit this [STM page](https://www.stm.info/en/about/developers/faq-new-api-hub) and this [TomTom page](https://developer.tomtom.com/knowledgebase/platform/articles/how-to-get-an-tomtom-api-key/).
 - Follow the instructions to create and account and obtain your API key.
 
 2. Set up API keys:
 
 - Copy the file `.env-sample` and rename it `.env`
 - Replace the values with your actual API keys.
+
+### Usage (to be completed)

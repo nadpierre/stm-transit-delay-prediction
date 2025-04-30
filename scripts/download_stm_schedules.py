@@ -1,4 +1,4 @@
-from custom_functions import data_dir, logger, root_dir
+from custom_functions import data_dir, download_dir, logger, root_dir
 from datetime import datetime
 from glob import glob
 import os
@@ -12,7 +12,7 @@ url = 'https://www.stm.info/sites/default/files/gtfs/gtfs_stm.zip'
 current_time = datetime.now()
 current_date = current_time.strftime('%Y-%m-%d')
 
-dest_folder = os.path.join(root_dir, data_dir)
+dest_folder = os.path.join(root_dir, data_dir, download_dir)
 zip_file_name = os.path.basename(url)
 zip_file_path = os.path.join(dest_folder, zip_file_name)
 
