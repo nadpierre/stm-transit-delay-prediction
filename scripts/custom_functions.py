@@ -51,6 +51,11 @@ OCCUPANCY_STATUS = {
   7: 'Not accepting passengers'
 }
 
+STOP_STATUS = {
+  1: 'Stopped At',
+  2: 'In Transit To'
+}
+
 WEATHER_CODES = {
   0: 'Clear sky',
   1: 'Mainly clear',
@@ -80,12 +85,6 @@ WEATHER_CODES = {
   95: 'Slight or moderate thunderstorm',
   96: 'Thunderstorm with slight hail',
   99: 'Thunderstorm with heavy hail'
-}
-
-STOP_STATUS = {
-  1: 'incoming_at',
-  2: 'stopped_at',
-  3: 'in_transit_to'
 }
 
 root_dir = Path(__file__).parent.parent.resolve()

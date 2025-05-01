@@ -24,7 +24,7 @@ Mean decrease in inpurity (MDI)
 ## Future Improvements (to be completed)
 
 Model is overfitted to the time period the data was collected. It would have been ideal to collect data all year
-If collected all year, another feature to add would be if it's a holiday
+If collected all year, another feature to add would be month and if it's a holiday
 Add events (concerts, festivals, sports events)
 Cross-validate incident distance window (currently 500 meters)
 
