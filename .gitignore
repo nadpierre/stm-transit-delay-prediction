@@ -4,4 +4,6 @@ data/
 models/
 venv/
 .env
+data.zip
+models.zip
 stm_api_errors.log
