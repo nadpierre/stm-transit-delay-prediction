@@ -4,6 +4,14 @@ import pandas as pd
 from pathlib import Path
 import requests
 
+DELAY_CLASS = {
+  0: 'Very Early',
+  1: 'Early',
+  2: 'On Time',
+  3: 'Late',
+  4: 'Very Late'
+}
+
 INCIDENT_CATEGORIES = {
   0: 'Unknown',
   1: 'Accident',
@@ -49,6 +57,12 @@ OCCUPANCY_STATUS = {
   5: 'Crushed standing room only',
   6: 'Full',
   7: 'Not accepting passengers'
+}
+
+SCHEDULE_RELATIONSHIP = {
+  0: 'Scheduled',
+  1: 'Skipped',
+  2: 'No Data',
 }
 
 STOP_STATUS = {

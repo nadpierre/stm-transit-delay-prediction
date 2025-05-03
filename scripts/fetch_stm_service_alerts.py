@@ -19,8 +19,8 @@ data = response.json()
 
 alerts = []
 for alert in data['alerts']:
-  start_date = alert['active_periods']['start']
-  end_date = alert['active_periods']['end']
+  start_time = alert['active_periods']['start']
+  end_time = alert['active_periods']['end']
   route_id = None
   message = alert['description_texts'][1]['text']
  
@@ -40,8 +40,8 @@ for alert in data['alerts']:
     if len(stop_ids) > 0:      
       for id in stop_ids:
           alerts.append({
-            'start_date' : start_date,
-            'end_date': end_date,
+            'start_date' : start_time,
+            'end_date': end_time,
             'route_id': route_id,
             'stop_id': id,
         })
