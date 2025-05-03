@@ -37,8 +37,8 @@ MAGNITUDE_OF_DELAY = {
 }
 
 MTL_COORDS = {
-  'latitude': 45.5019,
-  'longitude':  -73.5674
+  'latitude': 45.508888,
+  'longitude':  -73.561668
 }
 
 OCCUPANCY_STATUS = {
