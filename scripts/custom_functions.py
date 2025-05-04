@@ -50,6 +50,7 @@ MTL_COORDS = {
 }
 
 OCCUPANCY_STATUS = {
+  0: 'Unknown',
   1: 'Empty',
   2: 'Many seats available',
   3: 'Few seats available',
