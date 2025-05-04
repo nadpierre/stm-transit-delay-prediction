@@ -5,11 +5,11 @@ from pathlib import Path
 import requests
 
 DELAY_CLASS = {
-  0: 'Very Early',
-  1: 'Early',
+  0: 'Early',
+  1: 'Slightly Early',
   2: 'On Time',
-  3: 'Late',
-  4: 'Very Late'
+  3: 'Slighly Late',
+  4: 'Late'
 }
 
 INCIDENT_CATEGORIES = {

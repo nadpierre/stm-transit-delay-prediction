@@ -6,12 +6,14 @@
 
 ## Dataset (to be completed)
 
-[STM Developers](https://www.stm.info/en/about/developers)
+[STM GTFS](https://www.stm.info/en/about/developers)
 Real-time and Scheduled General Transit Feed Specification (GTFS) from API
-[Weather Forecast API](https://open-meteo.com/en/docs)
+[Open-Meteo API](https://open-meteo.com/en/docs)
 [Tomtom Traffic API](https://developer.tomtom.com/)
 
 Trip updates and vehicle positions were collected from April 27th to May 11th.
+
+Total of 1 Million rows
 
 ## Methods & Models (to be completed)
 
