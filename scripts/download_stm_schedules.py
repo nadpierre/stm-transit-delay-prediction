@@ -43,7 +43,7 @@ if response.ok:
   for file_path in txt_files:
     stem = Path(file_path).stem
     basename = os.path.basename(file_path)
-    if (stem not in ['routes', 'stops', 'stop_times']):
+    if (stem not in ['routes', 'stops', 'stop_times', 'trips']):
       logger.info('Deleting %s', basename)
       os.remove(file_path) # Delete unrelevant text files
     else: # Add date to stops.txt and stop_times.txt

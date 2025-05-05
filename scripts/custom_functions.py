@@ -6,10 +6,8 @@ import requests
 
 DELAY_CLASS = {
   0: 'Early',
-  1: 'Slightly Early',
-  2: 'On Time',
-  3: 'Slighly Late',
-  4: 'Late'
+  1: 'On Time',
+  2: 'Late'
 }
 
 INCIDENT_CATEGORIES = {
