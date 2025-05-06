@@ -69,37 +69,6 @@ STOP_STATUS = {
   2: 'In Transit To'
 }
 
-WEATHER_CODES = {
-  0: 'Clear sky',
-  1: 'Mainly clear',
-  2: 'Partly cloudy',
-  3: 'Overcast',
-  45: 'Fog',
-  48: 'Depositing rime fog',
-  51: 'Light drizzle',
-  53: 'Moderate drizzle',
-  55: 'Dense drizzle',
-  56: 'Light freezing drizzle',
-  57: 'Dense freezing drizzle',
-  61: 'Slight rain',
-  63: 'Moderate rain',
-  65: 'Heavy rain',
-  66: 'Light freezing rain',
-  67: 'Heavy frizzing rain',
-  71: 'Slight snow fall',
-  73: 'Moderate snow fall',
-  75: 'Heavy snow fall',
-  77: 'Snow grains',
-  80: 'Slight rain showers',
-  81: 'Moderate rain showers',
-  82: 'Violent rain showers',
-  85: 'Slight show showers',
-  86: 'Heavy show showers',
-  95: 'Slight or moderate thunderstorm',
-  96: 'Thunderstorm with slight hail',
-  99: 'Thunderstorm with heavy hail'
-}
-
 root_dir = Path(__file__).parent.parent.resolve()
 data_dir = 'data'
 api_dir = 'api'
@@ -128,7 +97,7 @@ def fetch_weather(start_date:str, end_date:str, forecast:bool=False) -> list:
   weather_url = (
     f'{root_url}'
     f'latitude={MTL_COORDS["latitude"]}&longitude={MTL_COORDS["longitude"]}'
-    f'&hourly=temperature_2m,precipitation,windspeed_10m,weathercode'
+    f'&hourly=temperature_2m,relative_humidity_2m,dew_point_2m,precipitation,pressure_msl,visibility,cloud_cover,wind_speed_10m,wind_direction_10m,wind_gusts_10m'
     f'&start_date={start_date}&end_date={end_date}'
     f'&timezone=America%2FToronto'
   )
@@ -143,9 +112,15 @@ def fetch_weather(start_date:str, end_date:str, forecast:bool=False) -> list:
         weather_list.append({
           'time': data['hourly']['time'][i],
           'temperature': data['hourly']['temperature_2m'][i],
+          'relative_humidity': data['hourly']['relative_humidity_2m'][i],
+          'dew_point':  data['hourly']['dew_point_2m'][i],
           'precipitation': data['hourly']['precipitation'][i],
-          'windspeed': data['hourly']['windspeed_10m'][i],
-          'weathercode': data['hourly']['weathercode'][i]
+          'pressure': data['hourly']['pressure_msl'][i],
+          'visibility': data['hourly']['visibility'][i],
+          'cloud_cover': data['hourly']['cloud_cover'][i],
+          'windspeed': data['hourly']['wind_speed_10m'][i],
+          'wind_direction': data['hourly']['wind_direction_10m'][i],
+          'wind_gusts': data['hourly']['wind_gusts_10m'][i]
       })
         
   return weather_list
