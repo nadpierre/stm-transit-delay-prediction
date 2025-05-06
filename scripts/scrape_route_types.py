@@ -1,5 +1,5 @@
 from bs4 import BeautifulSoup
-from custom_functions import export_to_csv, root_dir, data_dir, download_dir
+from custom_functions import export_to_csv, root_dir, data_dir
 import os
 import requests
 
