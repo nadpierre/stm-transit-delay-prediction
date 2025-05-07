@@ -9,7 +9,7 @@ current_time = datetime.now(timezone.utc)
 three_days_before = current_time - timedelta(days=3)
 start_date = three_days_before.strftime('%Y-%m-%d')
 
-weather_list = fetch_weather(start_date='2025-04-27', end_date='2025-05-03')
+weather_list = fetch_weather(start_date=start_date, end_date=start_date)
 
 if len(weather_list) > 0:
   export_to_csv(weather_list, csv_path)
