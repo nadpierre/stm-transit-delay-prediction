@@ -6,7 +6,7 @@ import requests
 
 DELAY_CLASS = {
   0: 'Early',
-  1: 'On Time',
+  1: 'OnTime',
   2: 'Late'
 }
 
@@ -20,7 +20,7 @@ MTL_COORDS = {
 SCHEDULE_RELATIONSHIP = {
   0: 'Scheduled',
   1: 'Skipped',
-  2: 'No Data',
+  2: 'NoData',
 }
 
 root_dir = Path(__file__).parent.parent.resolve()
