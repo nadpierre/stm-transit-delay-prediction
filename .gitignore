@@ -2,6 +2,7 @@
 __pycache__
 data/
 models/
+notebooks/catboost_info
 venv/
 .env
 data.zip

@@ -10,63 +10,17 @@ DELAY_CLASS = {
   2: 'Late'
 }
 
-INCIDENT_CATEGORIES = {
-  0: 'Unknown',
-  1: 'Accident',
-  2: 'Fog',
-  3: 'DangerousConditions',
-  4: 'Rain',
-  5: 'Ice',
-  6: 'Jam',
-  7: 'LaneClosed',
-  8: 'RoadClosed',
-  9: 'RoadWorks',
-  10: 'Wind',
-  11: 'Flooding',
-  14: 'BrokenDownVehicle'
-}
-
 LOCAL_TIMEZONE = 'Canada/Eastern'
-
-STOP_TYPE = {
-  0: 'Regular bus stop',
-  1: 'Parent metro station',
-  2: 'Bus top near metro'
-}
-
-MAGNITUDE_OF_DELAY = {
-  0: 'Unknown',
-  1: 'Minor',
-  2: 'Moderate',
-  3: 'Major',
-  4: 'Undefined'
-}
 
 MTL_COORDS = {
   'latitude': 45.508888,
   'longitude':  -73.561668
 }
 
-OCCUPANCY_STATUS = {
-  0: 'Unknown',
-  1: 'Empty',
-  2: 'Many seats available',
-  3: 'Few seats available',
-  4: 'Standing room only',
-  5: 'Crushed standing room only',
-  6: 'Full',
-  7: 'Not accepting passengers'
-}
-
 SCHEDULE_RELATIONSHIP = {
   0: 'Scheduled',
   1: 'Skipped',
   2: 'No Data',
-}
-
-STOP_STATUS = {
-  1: 'Stopped At',
-  2: 'In Transit To'
 }
 
 root_dir = Path(__file__).parent.parent.resolve()

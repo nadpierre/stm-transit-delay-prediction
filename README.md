@@ -9,7 +9,6 @@
 [STM GTFS](https://www.stm.info/en/about/developers)
 Real-time and Scheduled General Transit Feed Specification (GTFS) from API
 [Open-Meteo API](https://open-meteo.com/en/docs)
-[Tomtom Traffic API](https://developer.tomtom.com/)
 
 Trip updates and vehicle positions were collected from April 27th to May 11th.
 
@@ -91,16 +90,16 @@ Cross-validate incident distance window (currently 500 meters)
 
 ### API Key Setup
 
-To run some of the scripts of this project you need an API key from STM Developer Hub and TomTom Developer.
+To run some of the scripts of this project you need an API key from STM Developer Hub.
 
-1. Get API keys:
+1. Get API key:
 
-- Visit this [STM page](https://www.stm.info/en/about/developers/faq-new-api-hub) and this [TomTom page](https://developer.tomtom.com/knowledgebase/platform/articles/how-to-get-an-tomtom-api-key/).
+- Visit this [STM page](https://www.stm.info/en/about/developers/faq-new-api-hub)
 - Follow the instructions to create and account and obtain your API key.
 
-2. Set up API keys:
+2. Set up API key:
 
 - Copy the file `.env-sample` and rename it `.env`
-- Replace the values with your actual API keys.
+- Replace the values with your actual API key.
 
 ### Usage (to be completed)
