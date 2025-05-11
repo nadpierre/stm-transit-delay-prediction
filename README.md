@@ -103,3 +103,12 @@ To run some of the scripts of this project you need an API key from STM Develope
 - Replace the values with your actual API key.
 
 ### Usage (to be completed)
+
+> [!NOTE]
+> This error might occur when trying to run a script: `ModuleNotFoundError: No module named <directory_name>`
+> To fix it, run the following commands at the root of the project:
+
+```
+set -a
+source .env
+```

@@ -1,9 +1,12 @@
 from bs4 import BeautifulSoup
-from custom_functions import export_to_csv, root_dir, data_dir
 import os
 import requests
 
-csv_file = os.path.join(root_dir, data_dir, 'route_types.csv')
+# Import custom code
+from src.constants import ROOT_DIR, DATA_DIR
+from src.helper_functions import export_to_csv
+
+csv_file = os.path.join(ROOT_DIR, DATA_DIR, 'route_types.csv')
 
 url = 'https://www.stm.info/en/info/networks/bus'
 
