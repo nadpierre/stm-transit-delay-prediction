@@ -3,15 +3,28 @@ import joblib
 import numpy as np
 
 # Import custom code
-from src.constants import *
-from src.helper_functions import *
+#from src.constants import *
+#from src.helper_functions import *
 
 app = Flask(__name__)
 #model = joblib.load('models/regression_model.pkl')
+model = None
 
 @app.route('/')
 def home():
-  return render_template('index.html')
+  bus_lines = [48, 49, 69]
+  return render_template('index.html', bus_lines=bus_lines)
+
+@app.route('/get-directions', methods=['POST'])
+def get_directions():
+    pass
+
+@app.route('/get-stops', methods=['POST'])
+def get_stops():
+    stops = []
+    bus_line = request.json.get('bus_line')
+    direction = request.json.get('direction')
+    return jsonify(stops[bus_line][direction])
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -21,7 +34,7 @@ def predict():
         prediction = model.predict(np.array([[feature]]))
         return render_template('index.html', prediction=prediction[0])
     except Exception as e:
-        return render_template('index.html', prediction=f"Error: {str(e)}")
+        return render_template('index.html', error=e)
   
 if __name__ == '__main__':
     app.run(debug=True)
