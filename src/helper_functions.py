@@ -3,7 +3,7 @@ import pandas as pd
 import requests
 
 # Import custom code
-from constants import MTL_COORDS
+from src.constants import MTL_COORDS
 
 def export_to_csv(dict_list:list, csv_path:str) -> None:
   df = pd.DataFrame(dict_list)
