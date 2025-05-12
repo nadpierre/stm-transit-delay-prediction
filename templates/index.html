@@ -13,7 +13,7 @@
         <label for="bus_line">Select Bus Line:</label>
         <select id="bus_line" name="bus_line">
             {% for line in bus_lines %}
-                <option value="{{ line }}">{{ line }}</option>
+                <option style="background-color: '{{ line.backgroundColor }}'; color: '{{ line.fontColor }}';" value="{{ line.id }}">{{ line.id }}</option>
             {% endfor %}
         </select>
         

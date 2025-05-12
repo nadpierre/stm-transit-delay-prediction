@@ -9,15 +9,12 @@ import numpy as np
 app = Flask(__name__)
 #model = joblib.load('models/regression_model.pkl')
 model = None
+scaler = joblib.load('models/scaler.coords.pkl')
 
 @app.route('/')
 def home():
   bus_lines = [48, 49, 69]
   return render_template('index.html', bus_lines=bus_lines)
-
-@app.route('/get-directions', methods=['POST'])
-def get_directions():
-    pass
 
 @app.route('/get-stops', methods=['POST'])
 def get_stops():
