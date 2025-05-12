@@ -1,7 +1,5 @@
 # STM Transit Delay Prediction
 
-## Introduction
-
 ## Description (to be completed)
 
 ## Dataset (to be completed)
@@ -29,22 +27,15 @@ If collected all year, another feature to add would be month and if it's a holid
 Add events (concerts, festivals, sports events)
 Cross-validate incident distance window (currently 500 meters)
 
-## Featured Deliverables (to be completed)
+## Featured Notebooks
 
-- Notebooks
-- Model
-- Presentation
+- Data Collection and Cleaning
+- Data Preprocessing
+- Data Modeling
 
-## Getting Started
+## Project Installation
 
-### Import Data (to be completed)
-
-- Create data directory
-- Create models directory
-
-### Project Installation
-
-1. Clone the repository
+1. **Clone the repository**
 
 - Open your terminal or command prompt.
 - Navigate to the directory where you want to install the project.
@@ -53,20 +44,24 @@ Cross-validate incident distance window (currently 500 meters)
   git clone https://github.com/nadpierre/stm-transit-delay-prediction.git
   ```
 
-2. Create a virtual environment
+2. **Create a virtual environment**
+
    ```
    cd stm-transit-delay-prediction
    python<version> -m venv <virtual-environment-name>
    ```
-   Note: the python version used in this project is 3.13.
-3. Activate the virtual environment
+
+   > [!NOTE]
+   > The python version used in this project is 3.13.
+
+3. **Activate the virtual environment**
 
 - Activate the virtual environment based on your operating system
   ```
   source <venv-folder>/bin/activate
   ```
 
-4. Install dependencies
+4. **Install dependencies**
 
 - Navigate to the project directory
   ```
@@ -77,20 +72,37 @@ Cross-validate incident distance window (currently 500 meters)
   pip install -r requirements.txt
   ```
 
-5. Run the project
+5. **Import Data and Model**
 
-- Start the project by running the appropriate command.
+- Download the zip files from the following links:
+  - [Data](https://drive.google.com/file/d/1GrZjOHlRLHzp_8HobkqwjebAieV8boO-/view?usp=sharing)
+  - [Model]()
+- Extract the archives.
+- Move the `data` and `models` directories to the root of the project.
+
+6. **Create an environment file**
+
+- Copy the file `.env-sample` and rename it `.env`
+
+7. **Import custom python code**
+   To avoid the following error `ModuleNotFoundError: No module named <directory_name>`, run the following commands:
+
+   ```
+   set -a
+   source .env
+   ```
+
+8. **Run the project**
+
+- Execute the following command in the root directory:
   ```
   python app.py
   ```
-
-6. Access the project
-
-- Open a web browser or the appropriate client to access the project
+- Open your browser to `http://127.0.0.1:5000`.
 
 ### API Key Setup
 
-To run some of the scripts of this project you need an API key from STM Developer Hub.
+To run the script `fetch_stm_trip_updates.py` you need an API key from the STM Developer Hub.
 
 1. Get API key:
 
@@ -99,16 +111,4 @@ To run some of the scripts of this project you need an API key from STM Develope
 
 2. Set up API key:
 
-- Copy the file `.env-sample` and rename it `.env`
-- Replace the values with your actual API key.
-
-### Usage (to be completed)
-
-> [!NOTE]
-> This error might occur when trying to run a script: `ModuleNotFoundError: No module named <directory_name>`
-> To fix it, run the following commands at the root of the project:
-
-```
-set -a
-source .env
-```
+- In the `.env` file, Replace the values with your actual API key.
