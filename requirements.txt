@@ -28,7 +28,9 @@ fastparquet==2024.11.0
 fonttools==4.57.0
 fqdn==1.5.1
 fsspec==2025.3.2
+geographiclib==2.0
 geopandas==1.0.1
+geopy==2.4.1
 graphviz==0.20.3
 gtfs-realtime-bindings==1.0.0
 h11==0.16.0
