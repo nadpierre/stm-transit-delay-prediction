@@ -23,9 +23,9 @@ Mean decrease in inpurity (MDI)
 ## Future Improvements (to be completed)
 
 Model is overfitted to the time period the data was collected. It would have been ideal to collect data all year
-If collected all year, another feature to add would be month and if it's a holiday
+If collected all year, other features to add would be day of week, month and if it's a holiday
 Add events (concerts, festivals, sports events)
-Cross-validate incident distance window (currently 500 meters)
+Traffic data
 
 ## Featured Notebooks
 
@@ -100,7 +100,7 @@ Cross-validate incident distance window (currently 500 meters)
   ```
 - Open your browser to `http://127.0.0.1:5000`.
 
-### API Key Setup
+## API Key Setup
 
 To run the script `fetch_stm_trip_updates.py` you need an API key from the STM Developer Hub.
 

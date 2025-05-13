@@ -7,6 +7,7 @@ ROOT_DIR = Path(__file__).parent.parent.resolve()
 DATA_DIR = 'data'
 API_DIR = 'api'
 DOWNLOAD_DIR = 'download'
+MODELS_DIR = 'models'
 LOG_FILE = os.path.join(ROOT_DIR, 'stm_api_errors.log')
 
 # Logger

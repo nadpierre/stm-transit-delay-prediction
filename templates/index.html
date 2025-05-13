@@ -3,33 +3,30 @@
 <head>
     <title>STM Bus Arrival Time Predictor</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <style type="test/css">
-        
-    </style>
 </head>
 <body>
     <h1>Predict Bus Arrival Time</h1>
     <form method="post" action="/predict">
-        <label for="bus_line">Select Bus Line:</label>
-        <select id="bus_line" name="bus_line">
+        <label for="bus-line">Select Bus Line:</label>
+        <select id="bus-line" name="bus-line">
+            <option value="">-- Select Bus Line --</option>
             {% for line in bus_lines %}
-                <option style="background-color: '{{ line.backgroundColor }}'; color: '{{ line.fontColor }}';" value="{{ line.id }}">{{ line.id }}</option>
+                <option value="{{ line.route_id }}">{{ line.route_id }} {{line.route_long_name}}</option>
             {% endfor %}
         </select>
         
         <br><br>
 
-        <label>Direction:</label><br>
-        {% for direction in directions %}
-            <input type="radio" id="direction_east" name="direction" value="{{ direction.id }}">{{ direction.name }}<br>
-        {% endfor %}
-        <br>
+        <label for="direction">Select Direction:</label>
+        <select name="direction" id="direction">
+            <option value="">-- Select Direction --</option>
+        </select>
+        
+        <br><br>
 
         <label for="stop">Select Stop:</label>
         <select id="stop" name="stop">
-            {% for stop in bus_stops %}
-                <option value="{{stop.id}}">{{stop.name}}</option>
-            {% endfor %}
+            <option value="">-- Select Stop --</option>
         </select>
 
         <br><br>
@@ -49,24 +46,54 @@
         <h3 style="color:red">{{ error.message }}</h3>
     {% endif %}
 
-    <script>
+    <script type="text/javascript">
         $(document).ready(function() {
-            $('input[name="direction"]').on('change', function() {
-                const busLine = $('#bus_line').val();
-                const direction = $(this).val();
-                
+            
+            $('#bus-line').on('change', function() {
+                const busLine = $('#bus-line').val();
+
                 $.ajax({
-                    url: '/get_stops',
+                    url: '/get-directions',
                     type: 'POST',
                     contentType: 'application/json',
-                    data: JSON.stringify({ bus_line: busLine, direction: direction }),
-                    success: function(data) {
-                        $('#stop').empty();
-                        $.each(data, function(index, value) {
-                            $('#stop').append(`<option value="${value}">${value}</option>`);
+                    data: JSON.stringify({ bus_line: busLine}),
+                    success: function(items) {
+                        $('#direction').empty();
+                        $('#direction').append(`<option value="">-- Select Direction --</option>`)
+                        $.each(items, function(index, item) {
+                            $('#direction').append(`<option value="${item.direction_fr}">${item.direction_en}</option>`);
                         });
+
+                        // Reset stops
+                        $('#stop').empty();
+                        $('#stop').append(`<option value="">-- Select Stop --</option>`);
                     }
                 });
+
+            });
+
+            $('#direction').on('change', function() {
+                const busLine = $('#bus-line').val();
+                const direction = $(this).val();
+                
+                if (busLine && direction) {
+                    $.ajax({
+                        url: '/get-stops',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({ bus_line: busLine, direction: direction }),
+                        success: function(items) {
+                            $('#stop').empty();
+                            $.each(items, function(index, item) {
+                                $('#stop').append(`<option value="${item.stop_id}">${item.stop_id} - ${item.stop_name}</option>`);
+                            });
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error fetching stips', error)
+                        }
+                    });
+                }
+                  
             });
         });
     </script>
