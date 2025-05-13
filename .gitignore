@@ -2,10 +2,8 @@
 __pycache__
 .vscode
 data/
-models/
 notebooks/catboost_info
 venv/
 .env
 data.zip
-models.zip
 stm_api_errors.log

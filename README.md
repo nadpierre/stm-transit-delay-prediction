@@ -41,7 +41,7 @@ The following tree-based regression models have been tested in this project: **X
 
 ## Results
 
-- The best performing model is **CatBoost** with a MAE of 70.37, a RMSE of 139.48 and a R² of 0.2435.
+- The best performing model is **CatBoost** with a MAE of 64.32, a RMSE of 127.06 and a R² of 0.3625.
 - The higher RMSE compared to MAE suggests that there are some significant prediction errors that influence the overall error metric.
 - The R² is not very good but understandable, considering how random transit delays can be.
 - The top 5 most important features are:
@@ -53,9 +53,12 @@ The following tree-based regression models have been tested in this project: **X
 
 ## Future Improvements
 
+- Adding features that show interaction between different variables (e. g. `is_peak_hour` with `stop_location_group` and `route_direction`)
 - The model is overfitted to the time period the data was collected (from April 27th to May 8th). It would have been ideal to collect data all year round.
 - If there was a year worth of data, other time-based features like `month` and `is_holiday` could have been added.
 - Adding events (concerts, festivals, sports events) and traffic incidents would enrich the model.
+- The results showed that delay is highly dependent on past performance. Exploring time-series models would have been interesting.
+- Explore advanced ensemble methods or deep learning models.
 
 ## Featured Notebooks
 
@@ -102,13 +105,11 @@ The following tree-based regression models have been tested in this project: **X
   pip install -r requirements.txt
   ```
 
-5. **Import Data and Model**
+5. **Import Data**
 
-- Download the zip files from the following links:
-  - [Data](https://drive.google.com/file/d/1GrZjOHlRLHzp_8HobkqwjebAieV8boO-/view?usp=sharing)
-  - [Model]()
-- Extract the archives.
-- Move the `data` and `models` directories to the root of the project.
+- Download the zip file from the [following link](https://drive.google.com/file/d/1eXAkEukoViIvppB9rGH-laS75mtNNgbr/view?usp=sharing)
+- Extract the archive.
+- Move the `data` directory to the root of the project.
 
 6. **Create an environment file**
 
@@ -141,4 +142,4 @@ To run the script `fetch_stm_trip_updates.py` you need an API key from the STM D
 
 2. Set up API key:
 
-- In the `.env` file, Replace the values with your actual API key.
+- In the `.env` file, replace the values with your actual API key.
