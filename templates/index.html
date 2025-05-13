@@ -32,7 +32,8 @@
         <br><br>
 
         <label for="expected_arrival">Expected Arrival Time:</label>
-        <input type="datetime-local" id="expected_arrival" name="expected_arrival">
+        <!-- Add the min and max date of the GTFS schedule -->
+        <input type="datetime-local" id="expected_arrival" name="expected_arrival", min="2025-01-06T00:00", max="2025-06-15T23:59">
 
         <br><br>
         <button type="submit">Predict Arrival Time</button>

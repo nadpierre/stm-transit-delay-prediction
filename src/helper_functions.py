@@ -7,9 +7,9 @@ from src.constants import MTL_COORDS, ROOT_DIR, DATA_DIR, DOWNLOAD_DIR
 
 # Data files
 download_path = os.path.join(ROOT_DIR, DATA_DIR, DOWNLOAD_DIR)
-routes_path = os.path.join(download_path, 'routes_2025-04-30.txt')
-trips_path = os.path.join(download_path, 'trips_2025-04-30.txt')
-stop_times_path = os.path.join(download_path, 'stop_times_2025-04-30.txt')
+routes_path = os.path.join(download_path, 'routes.txt')
+trips_path = os.path.join(download_path, 'trips.txt')
+stop_times_path = os.path.join(download_path, 'stop_times.txt')
 stops_path = os.path.join(ROOT_DIR, DATA_DIR, 'stop_clusters.csv')
 
 # Load data
@@ -57,6 +57,7 @@ def fetch_weather(start_date:str, end_date:str, attribute_list:list[str], foreca
 def get_bus_lines() -> list:
   bus_lines_df = routes_df[routes_df['route_type'] == 3]
   bus_lines_df = bus_lines_df[['route_id', 'route_long_name', 'route_color', 'route_text_color']]
+  
   return bus_lines_df.to_dict(orient='records')
 
 def get_bus_directions(bus_line:str) -> list:
@@ -94,4 +95,5 @@ def get_bus_stops(bus_line:str, direction:str) -> list:
   trip_stops_df = stop_times_df[stop_times_df['trip_id'] == trip_id][['stop_id', 'stop_sequence']]
   stops_df2 = stops_df[['stop_id', 'stop_name']]
   merged_stops_df = pd.merge(trip_stops_df, stops_df2, how='inner', on='stop_id')
+  
   return merged_stops_df.to_dict(orient='records')

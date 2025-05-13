@@ -1,37 +1,67 @@
 # STM Transit Delay Prediction
 
-## Description (to be completed)
+## Introduction
 
-## Dataset (to be completed)
+The _Société de transport de Montréal (STM)_ is Montreal’s public transport agency. The network contains four subway lines and 235 bus routes. The STM is one the biggest transit systems in Canada and North America.
 
-[STM GTFS](https://www.stm.info/en/about/developers)
-Real-time and Scheduled General Transit Feed Specification (GTFS) from API
-[Open-Meteo API](https://open-meteo.com/en/docs)
+## Description
 
-Trip updates and vehicle positions were collected from April 27th to May 11th.
+The objective of this project is to build a machine learning model that predicts, in seconds, the STM transit delays with the best accuracy.
 
-Total of 1 Million rows
+## Dataset
 
-## Methods & Models (to be completed)
+The data comes from three different sources:
 
-Don't have access to official historical data, separated dataset in 2 parts (past and current)
+- [STM Website](https://www.stm.info/en/info/networks/bus) to collect the route types through web scraping.
+- [STM General Transit Feed Specification (GTFS)](https://www.stm.info/en/about/developers) to collect the real-time trip updates and schedules.
+- [Open-Meteo API](https://open-meteo.com/en/docs) to collect the weather archive and forecast.
 
-Mean decrease in inpurity (MDI)
+The cleaned dataset contains a total of 7,530,892 rows and 27 columns.
 
-## Results (to be completed)
+## Methods & Models
 
-## Future Improvements (to be completed)
+### Data Preprocessing
 
-Model is overfitted to the time period the data was collected. It would have been ideal to collect data all year
-If collected all year, other features to add would be day of week, month and if it's a holiday
-Add events (concerts, festivals, sports events)
-Traffic data
+- There were extreme delay outliers of -10000 and 50000 seconds, which have been removed.
+- Due to the large volume of data, the majority has been used as past data, to calculate the average delay per stop. The most recent 1.5 Million rows have been kept for data modeling.
+- Temporal feature extraction was used to engineer features like `time_of_day` or `is_peak_hour`.
+- The categorial features have been encoded with One-Hot Encoding.
+
+### Models Tested
+
+The following tree-based regression models have been tested in this project: **XGBoost**, **LightGBM** and **CatBoost**. They have been selected because they are more suitable for high-cardinality, non-linear and mixed data. Also, they have a shorter fitting time for large datasets.
+
+### Evaluation Metrics
+
+- Mean Average Error (MAE)
+- Root Mean Squared Error (RMSE)
+- Coefficient of Determination (R²)
+- Feature Importances
+- SHapley Additive exPlanations (SHAP) analysis for interpretability
+
+## Results
+
+- The best performing model is **CatBoost** with a MAE of 70.37, a RMSE of 139.48 and a R² of 0.2435.
+- The higher RMSE compared to MAE suggests that there are some significant prediction errors that influence the overall error metric.
+- The R² is not very good but understandable, considering how random transit delays can be.
+- The top 5 most important features are:
+  - Expected trip duration
+  - Historical average delay
+  - Stop location
+  - Temperature
+  - Wind direction
+
+## Future Improvements
+
+- The model is overfitted to the time period the data was collected (from April 27th to May 8th). It would have been ideal to collect data all year round.
+- If there was a year worth of data, other time-based features like `month` and `is_holiday` could have been added.
+- Adding events (concerts, festivals, sports events) and traffic incidents would enrich the model.
 
 ## Featured Notebooks
 
-- Data Collection and Cleaning
-- Data Preprocessing
-- Data Modeling
+- [Data Collection and Cleaning](./notebooks/data_cleaning.ipynb)
+- [Data Preprocessing](./notebooks/data_preprocessing.ipynb)
+- [Data Modeling](./notebooks/data_modeling.ipynb)
 
 ## Project Installation
 

@@ -45,13 +45,9 @@ if response.ok:
   for file_path in txt_files:
     stem = Path(file_path).stem
     basename = os.path.basename(file_path)
-    if (stem not in ['routes', 'stops', 'stop_times', 'trips']):
+    if (stem not in ['routes', 'stops', 'stop_times', 'trips', 'calendar']):
       logger.info('Deleting %s', basename)
       os.remove(file_path) # Delete unrelevant text files
-    else: # Add date to stops.txt and stop_times.txt
-      old_path = os.path.join(dest_folder, basename)
-      new_path = os.path.join(dest_folder, f'{stem}_{current_date}.txt')
-      os.rename(old_path, new_path)
 
 else:
   logger.error('Download failed: status code %s\n%s', [response.status_code, response.text])
