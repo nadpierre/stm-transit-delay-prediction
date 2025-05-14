@@ -14,7 +14,7 @@ LOG_FILE = os.path.join(ROOT_DIR, 'stm_api_errors.log')
 logger = logging.getLogger('stm.delay_prediction')
 logging.basicConfig(
   filename=LOG_FILE,
-  level=logging.INFO,
+  level=logging.DEBUG,
   format='%(asctime)s %(name)s [%(levelname)s] %(message)s',
   datefmt='%Y-%m-%d %H:%M:%S')
 

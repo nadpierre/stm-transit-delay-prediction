@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Predict Bus Arrival Time</h1>
-    <form method="post" action="/predict">
+    <form id="predict-form" method="post" action="/predict">
         <label for="bus-line">Select Bus Line:</label>
         <select id="bus-line" name="bus-line">
             <option value="">-- Select Bus Line --</option>
@@ -38,15 +38,13 @@
         <br><br>
         <button type="submit">Predict Arrival Time</button>
     </form>
-    
-    {% if prediction %}
-        <!-- TODO: early (orange), on time (green), late (red) -->
-        <h2>Predicted Arrival Time: {{ prediction }}</h2>
-    {% endif %}
-    {% if error %}
-        <h3 style="color:red">{{ error.message }}</h3>
-    {% endif %}
 
+    <br><br>
+    
+    <div id="predict-result">
+
+    </div>
+    
     <script type="text/javascript">
         $(document).ready(function() {
             
@@ -96,6 +94,35 @@
                 }
                   
             });
+
+            $('#predict-form').on('submit', function(e) {
+                e.preventDefault();
+                $('#predict-result').empty();
+                $.ajax({
+                    url: '/predict',
+                    type: 'POST',
+                    data: $('#predict-form').serialize(),
+                    success: function(result) {
+                        let color = null
+                        switch (result.status) {
+                            case 'Early':
+                                color = 'orange'
+                                break;
+                            case 'OnTime':
+                                color = 'green'
+                                break;
+                            default:
+                                color = 'red'
+                        }
+                        $('#predict-result').append(`<h3>Planned Arrival Time: <span>${result.exp_arrival_time}</span></h2>`)
+                        $('#predict-result').append(`<h3>Predicted Arrival Time: <span style="color:${color}">${result.predicted_time}</span></h2>`)
+                    },
+                    error: function(error) {
+                        message = error.responseJSON.message
+                        $('#predict-result').append(`<h3 style="color:red">${message}</h3>`)
+                    }
+                })
+            })
         });
     </script>
 </body>
