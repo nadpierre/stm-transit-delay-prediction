@@ -31,12 +31,12 @@
 
         <br><br>
 
-        <label for="expected_arrival">Expected Arrival Time:</label>
-        <!-- Add the min and max date of the GTFS schedule -->
-        <input type="datetime-local" id="expected_arrival" name="expected_arrival", min="2025-01-06T00:00", max="2025-06-15T23:59">
+        <label for="chosen-time">Chosen Time:</label>
+        <!-- The min date is the min date of the modeling data and the max date is the end date of the GTFS schedule -->
+        <input type="datetime-local" id="chosen-time" name="chosen-time", min="2025-05-06T20:35", max="2025-06-16T00:00">
 
         <br><br>
-        <button type="submit">Predict Arrival Time</button>
+        <button type="submit">Get Next Arrival</button>
     </form>
 
     <br><br>
@@ -114,8 +114,8 @@
                             default:
                                 color = 'red'
                         }
-                        $('#predict-result').append(`<h3>Planned Arrival Time: <span>${result.exp_arrival_time}</span></h2>`)
-                        $('#predict-result').append(`<h3>Predicted Arrival Time: <span style="color:${color}">${result.predicted_time}</span></h2>`)
+                        $('#predict-result').append(`<h3>Scheduled Next Arrival Time: <span>${result.next_arrival_time}</span></h2>`)
+                        $('#predict-result').append(`<h3>Predicted Next Arrival Time: <span style="color:${color}">${result.predicted_time}</span></h2>`)
                     },
                     error: function(error) {
                         message = error.responseJSON.message

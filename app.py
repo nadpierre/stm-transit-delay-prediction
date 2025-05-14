@@ -9,19 +9,22 @@ import pytz
 
 # Import custom code
 from src.constants import LOCAL_TIMEZONE, ROOT_DIR, MODELS_DIR
-from src.helper_functions import get_bus_lines, get_bus_directions, get_bus_stops, fetch_hourly_weather
+from src.helper_functions import get_bus_lines, get_bus_directions, get_bus_stops, get_weather_info, get_trip_info
 
 app = Flask(__name__)
 
 # File paths
-model_path = os.path.join(ROOT_DIR, MODELS_DIR, 'regression_model.pkl')
-scaler_path = os.path.join(ROOT_DIR, MODELS_DIR, 'scaler_coords.pkl')
-best_feat_path = os.path.join(ROOT_DIR, MODELS_DIR, 'best_features.pkl')
+model_dir = os.path.join(ROOT_DIR, MODELS_DIR)
+model_path = os.path.join(model_dir, 'regression_model.pkl')
+scaler_path = os.path.join(model_dir, 'scaler_coords.pkl')
+best_feat_path = os.path.join(model_dir, 'best_features.pkl')
+min_time_path = os.path.join(model_dir, 'min_time.pkl')
 
 # Load data
 model = joblib.load(model_path)
 scaler = joblib.load(scaler_path)
 best_features = joblib.load(best_feat_path)
+#min_time_local = joblib.load(min_time_path)
 
 @app.route('/')
 def home():
@@ -48,73 +51,62 @@ def predict():
         route_id = int(request.form['bus-line'])
         direction = request.form['direction']
         stop_id = int(request.form['stop'])
-        arrival_time_str = request.form['expected_arrival']
+        chosen_time_str = request.form['chosen-time']
 
         # Format arrival date
-        arrival_time_local = pd.Timestamp(arrival_time_str, tz=LOCAL_TIMEZONE)
-        arrival_time_utc = arrival_time_local.tz_convert(tz=timezone.utc)
+        chosen_time_local = pd.Timestamp(chosen_time_str, tz=LOCAL_TIMEZONE)
+        chosen_time_utc = chosen_time_local.tz_convert(tz=timezone.utc)
+
+        # TODO: remove manual timestamp after running notebooks
+        min_time_local = pd.Timestamp('2025-05-06 20:35:55-0400')
 
         # Get dates
-        now_utc = pd.Timestamp.utcnow()
+        now_local = pd.Timestamp.now(tz=LOCAL_TIMEZONE)
+        now_utc = now_local.tz_convert(tz=timezone.utc)
         three_days_before = now_utc - pd.Timedelta(days=3)
-        two_weeks_later = now_utc + pd.Timedelta(weeks=2)
+        two_weeks_later_utc = now_utc + pd.Timedelta(weeks=2)
+        min_time_utc = min_time_local.tz_convert(tz=timezone.utc)
+        two_weeks_later_local = two_weeks_later_utc.tz_convert(tz=LOCAL_TIMEZONE)
 
-        weather = {}
-        if arrival_time_utc <= three_days_before:
-            weather = fetch_hourly_weather(arrival_time_utc)
-        elif arrival_time_utc <= two_weeks_later:
-            weather = fetch_hourly_weather(arrival_time_utc, forecast=True)
-        else:
+        # Fetch weather data
+        weather_data = {}
+        if (chosen_time_utc < min_time_utc) | (chosen_time_utc > two_weeks_later_utc):
+            dt_format = '%Y-%m-%d'
             error = {
-                'message': 'The date should not be later than 2 weeks from now.'
+                'message': f'The date should not be earlier than {min_time_local.strftime(dt_format)} or later than {two_weeks_later_local.strftime(dt_format)}'
             }
             return Response(json.dumps(error), status=400, content_type='application/json')
+        else:
+            if chosen_time_utc <= three_days_before:
+                weather_data = get_weather_info(chosen_time_utc)
+            elif chosen_time_utc <= two_weeks_later_utc:
+                weather_data = get_weather_info(chosen_time_utc, forecast=True)
 
         # Create matrix
         input_df= pd.DataFrame(columns=best_features)  
        
-        for attr in weather.keys():
-            input_df.iloc[0, attr] = weather[attr]
+        # Add weather data
+        for attr in weather_data.keys():
+            input_df.iloc[0, attr] = weather_data[attr]
 
-        # TODO: get other features that are not in form
-
-        # Build matrix
-        data = {
-            'exp_trip_duration': [3600],
-            #'relative_humidity_2m': [60],
-            #'wind_direction_10m': [140],
-            #'precipitation': [0],
-            'time_of_day_morning': [0],
-            'hist_avg_delay': [300],
-            'route_direction_South': [0],
-            #'wind_speed_10m': [10],
-            'frequency_normal': [1],
-            'time_of_day_evening': [0],
-            'stop_location_group': [2],
-            'is_peak_hour': [1],
-            'trip_phase_middle': [0],
-            'frequency_very_rare': [0],
-            'route_direction_North': [0],
-            'route_direction_West': [1],
-            'frequency_rare': [0],
-            #'temperature_2m': [24.3],
-            'stop_distance': [400],
-            #'cloud_cover': [0],
-            'trip_phase_start': [0]
-        }
-        input_matrix = pd.DataFrame(data)
+        # Add trip data
+        trip_result = get_trip_info(route_id, direction, stop_id, chosen_time_local)
+        trip_data = trip_result['trip_data']
+        for attr in trip_data.keys():
+            input_df.iloc[0, attr] = trip_data[attr]
 
         # Make prediction
-        prediction = model.predict(input_matrix)[0]
-        predicted_time = arrival_time_local + pd.Timedelta(seconds=prediction)
+        prediction = model.predict(input_df)[0]
+        predicted_time = chosen_time_local + pd.Timedelta(seconds=prediction)
         rounded_time = predicted_time.round('min')
 
         result = {}
-        result['exp_arrival_time'] = arrival_time_local.strftime('%Y-%m-%d %H:%M')
+        next_arrival_time = trip_result['next_arrival_time']
+        result['next_arrival_time'] = next_arrival_time.strftime('%Y-%m-%d %H:%M')
         result['predicted_time'] = rounded_time.strftime('%Y-%m-%d %H:%M')
-        if rounded_time < arrival_time_local:
+        if rounded_time < next_arrival_time:
             result['status'] = 'Early'
-        elif rounded_time > arrival_time_local:
+        elif rounded_time > next_arrival_time:
             result['status'] = 'Late'
         else:
             result['status'] = 'OnTime'
