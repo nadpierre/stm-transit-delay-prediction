@@ -53,6 +53,7 @@ The following tree-based regression models have been tested in this project: **X
 
 ## Future Improvements
 
+- Insert the data into a database
 - Adding features that show interaction between different variables (e. g. `is_peak_hour` with `stop_location_group` and `route_direction`)
 - The model is overfitted to the time period the data was collected (from April 27th to May 8th). It would have been ideal to collect data all year round.
 - If there was a year worth of data, other time-based features like `month` and `is_holiday` could have been added.

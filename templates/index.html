@@ -3,6 +3,21 @@
 <head>
     <title>STM Bus Arrival Time Predictor</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .loader {
+            border: 16px solid #f3f3f3; /* Light grey */
+            border-top: 16px solid #3498db; /* Blue */
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            animation: spin 2s linear infinite;
+            }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
     <h1>Predict Bus Arrival Time</h1>
@@ -10,7 +25,7 @@
         <label for="bus-line">Select Bus Line:</label>
         <select id="bus-line" name="bus-line">
             <option value="">-- Select Bus Line --</option>
-            {% for line in bus_lines %}
+            {% for line in result.bus_lines %}
                 <option value="{{ line.route_id }}">{{ line.route_id }} {{line.route_long_name}}</option>
             {% endfor %}
         </select>
@@ -33,7 +48,7 @@
 
         <label for="chosen-time">Chosen Time:</label>
         <!-- The min date is the min date of the modeling data and the max date is the end date of the GTFS schedule -->
-        <input type="datetime-local" id="chosen-time" name="chosen-time", min="2025-05-06T20:35", max="2025-06-16T00:00">
+        <input type="datetime-local" id="chosen-time" name="chosen-time", min="{{ result.min_time }}", max="{{ result.max_time }}">
 
         <br><br>
         <button type="submit">Get Next Arrival</button>
@@ -42,7 +57,7 @@
     <br><br>
     
     <div id="predict-result">
-
+        
     </div>
     
     <script type="text/javascript">
@@ -98,6 +113,7 @@
             $('#predict-form').on('submit', function(e) {
                 e.preventDefault();
                 $('#predict-result').empty();
+                $('#predict-result').append(`<div class="loader"></div>`)
                 $.ajax({
                     url: '/predict',
                     type: 'POST',
@@ -108,14 +124,15 @@
                             case 'Early':
                                 color = 'orange'
                                 break;
-                            case 'OnTime':
+                            case 'On Time':
                                 color = 'green'
                                 break;
                             default:
                                 color = 'red'
                         }
+                        $('.loader').remove()
                         $('#predict-result').append(`<h3>Scheduled Next Arrival Time: <span>${result.next_arrival_time}</span></h2>`)
-                        $('#predict-result').append(`<h3>Predicted Next Arrival Time: <span style="color:${color}">${result.predicted_time}</span></h2>`)
+                        $('#predict-result').append(`<h3>Predicted Next Arrival Time: <span style="color:${color}">${result.predicted_time} (${result.status})</span></h2>`)
                     },
                     error: function(error) {
                         message = error.responseJSON.message

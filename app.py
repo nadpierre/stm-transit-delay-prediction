@@ -25,11 +25,18 @@ model = joblib.load(model_path)
 scaler = joblib.load(scaler_path)
 best_features = joblib.load(best_feat_path)
 #min_time_local = joblib.load(min_time_path)
+# TODO: remove manual timestamp after running notebooks
+min_time_local = pd.Timestamp('2025-05-06 20:35:55-0400')
 
 @app.route('/')
 def home():
-  bus_lines = get_bus_lines()
-  return render_template('index.html', bus_lines=bus_lines)
+  date_format = '%Y-%m-%dT%H:%M'
+  result = {
+    'bus_lines': get_bus_lines(),
+    'min_time': min_time_local.strftime(date_format),
+    'max_time': pd.Timestamp('2025-06-15 23:59:59-0400').strftime(date_format) # end of GTFS schedule
+  }
+  return render_template('index.html', result=result)
 
 @app.route('/get-directions', methods=['POST'])
 def get_directions():
@@ -57,13 +64,10 @@ def predict():
         chosen_time_local = pd.Timestamp(chosen_time_str, tz=LOCAL_TIMEZONE)
         chosen_time_utc = chosen_time_local.tz_convert(tz=timezone.utc)
 
-        # TODO: remove manual timestamp after running notebooks
-        min_time_local = pd.Timestamp('2025-05-06 20:35:55-0400')
-
         # Get dates
         now_local = pd.Timestamp.now(tz=LOCAL_TIMEZONE)
         now_utc = now_local.tz_convert(tz=timezone.utc)
-        three_days_before = now_utc - pd.Timedelta(days=3)
+        three_days_before_utc = now_utc - pd.Timedelta(days=3)
         two_weeks_later_utc = now_utc + pd.Timedelta(weeks=2)
         min_time_utc = min_time_local.tz_convert(tz=timezone.utc)
         two_weeks_later_local = two_weeks_later_utc.tz_convert(tz=LOCAL_TIMEZONE)
@@ -77,29 +81,50 @@ def predict():
             }
             return Response(json.dumps(error), status=400, content_type='application/json')
         else:
-            if chosen_time_utc <= three_days_before:
+            if chosen_time_utc <= three_days_before_utc:
                 weather_data = get_weather_info(chosen_time_utc)
             elif chosen_time_utc <= two_weeks_later_utc:
                 weather_data = get_weather_info(chosen_time_utc, forecast=True)
-
-        # Create matrix
-        input_df= pd.DataFrame(columns=best_features)  
-       
-        # Add weather data
-        for attr in weather_data.keys():
-            input_df.iloc[0, attr] = weather_data[attr]
-
-        # Add trip data
+        
+        # Get trip data
         trip_result = get_trip_info(route_id, direction, stop_id, chosen_time_local)
         trip_data = trip_result['trip_data']
-        for attr in trip_data.keys():
-            input_df.iloc[0, attr] = trip_data[attr]
+
+        # Create input matrix
+        merged_data = {**weather_data, **trip_data}
+
+        # TODO: sort keys in alphabetical order and loop through
+        input_data = {
+            'exp_trip_duration': [merged_data['exp_trip_duration']],
+            'relative_humidity_2m': [merged_data['relative_humidity_2m']],
+            'wind_direction_10m': [merged_data['wind_direction_10m']],
+            'precipitation': [merged_data['precipitation']],
+            'time_of_day_morning': [merged_data['time_of_day_morning']],
+            'hist_avg_delay': [merged_data['hist_avg_delay']],
+            'route_direction_South': [merged_data['route_direction_South']],
+            'wind_speed_10m': [merged_data['wind_speed_10m']],
+            'frequency_normal': [merged_data['frequency_normal']],
+            'time_of_day_evening': [merged_data['time_of_day_evening']],
+            'stop_location_group': [merged_data['stop_location_group']],
+            'is_peak_hour': [merged_data['is_peak_hour']],
+            'trip_phase_middle': [merged_data['trip_phase_middle']],
+            'frequency_very_rare': [merged_data['frequency_very_rare']],
+            'route_direction_North': [merged_data['route_direction_North']],
+            'route_direction_West': [merged_data['route_direction_West']],
+            'frequency_rare': [merged_data['frequency_rare']],
+            'temperature_2m': [merged_data['temperature_2m']],
+            'stop_distance': [merged_data['stop_distance']],
+            'cloud_cover': [merged_data['cloud_cover']],
+            'trip_phase_start': [merged_data['trip_phase_start']] 
+        }
 
         # Make prediction
+        input_df = pd.DataFrame(input_data)
         prediction = model.predict(input_df)[0]
         predicted_time = chosen_time_local + pd.Timedelta(seconds=prediction)
         rounded_time = predicted_time.round('min')
 
+        # Send results
         result = {}
         next_arrival_time = trip_result['next_arrival_time']
         result['next_arrival_time'] = next_arrival_time.strftime('%Y-%m-%d %H:%M')
@@ -109,7 +134,7 @@ def predict():
         elif rounded_time > next_arrival_time:
             result['status'] = 'Late'
         else:
-            result['status'] = 'OnTime'
+            result['status'] = 'On Time'
 
         return jsonify(result)
     except Exception as error:
