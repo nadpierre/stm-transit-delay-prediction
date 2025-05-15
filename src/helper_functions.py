@@ -76,12 +76,8 @@ def get_bus_directions(bus_line:str) -> list:
   route_id = int(bus_line)
   trip_headsign = trips_df[trips_df['route_id'] == route_id]['trip_headsign']
 
-  # Extract first word
-  split = trip_headsign.str.split(expand=True)
+  directions_fr = trip_headsign.sort_values().unique().tolist()
   
-  # Remove repetitions
-  directions_fr = split[0].sort_values().unique().tolist()
-
   # Translate directions
   directions = []
   for direction in directions_fr:
@@ -89,13 +85,13 @@ def get_bus_directions(bus_line:str) -> list:
     data['direction_fr'] = direction
        
     if 'Nord' in direction:
-      data['direction_en'] = 'North'
+      data['direction_en'] = direction.replace('Nord', 'North')
     elif 'Sud' in direction:
-      data['direction_en'] = 'South'
+      data['direction_en'] = direction.replace('Sud', 'South')
     elif 'Ouest' in direction:
-      data['direction_en'] = 'West'
+      data['direction_en'] = direction.replace('Ouest', 'West')
     elif 'Est' in direction:
-      data['direction_en'] = 'East'
+      data['direction_en'] = direction.replace('Est', 'East')
     
     directions.append(data)
 
@@ -103,10 +99,10 @@ def get_bus_directions(bus_line:str) -> list:
 
 def get_bus_stops(bus_line:str, direction:str) -> list:
   route_id = int(bus_line)
-  trip_id = trips_df[(trips_df['route_id'] == route_id) & (trips_df['trip_headsign'].str.contains(direction))].iloc[0]['trip_id']
+  trip_id = trips_df[(trips_df['route_id'] == route_id) & (trips_df['trip_headsign'] == direction)].iloc[0]['trip_id']
   trip_stops_df = stop_times_df[stop_times_df['trip_id'] == trip_id][['stop_id', 'stop_sequence']]
-  stops_df2 = stops_df[['stop_id', 'stop_name']]
-  merged_stops_df = pd.merge(trip_stops_df, stops_df2, how='inner', on='stop_id')
+  stops_df_reduced = stops_df[['stop_id', 'stop_name']]
+  merged_stops_df = pd.merge(trip_stops_df, stops_df_reduced, how='inner', on='stop_id')
   
   return merged_stops_df.to_dict(orient='records')
 
@@ -115,24 +111,23 @@ def get_trip_info(route_id:int, direction:str, stop_id:int, chosen_time_local:pd
   trip_data = {}
 
   # Add direction one-hot features
-  match direction:
-    case 'Nord':
-      trip_data['route_direction_South'] = 0
-      trip_data['route_direction_North'] = 1
-      trip_data['route_direction_West'] = 0
-    case 'Sud':
-      trip_data['route_direction_South'] = 1
-      trip_data['route_direction_North'] = 0
-      trip_data['route_direction_West'] = 0
-    case 'Ouest':
-      trip_data['route_direction_South'] = 0
-      trip_data['route_direction_North'] = 0
-      trip_data['route_direction_West'] = 1
-    case 'Est':
-      trip_data['route_direction_South'] = 0
-      trip_data['route_direction_North'] = 0
-      trip_data['route_direction_West'] = 0
-  
+  if 'Nord' in direction:
+    trip_data['route_direction_South'] = 0
+    trip_data['route_direction_North'] = 1
+    trip_data['route_direction_West'] = 0
+  elif 'Sud' in direction:
+    trip_data['route_direction_South'] = 1
+    trip_data['route_direction_North'] = 0
+    trip_data['route_direction_West'] = 0
+  elif 'Ouest' in direction:
+    trip_data['route_direction_South'] = 0
+    trip_data['route_direction_North'] = 0
+    trip_data['route_direction_West'] = 1
+  else:
+    trip_data['route_direction_South'] = 0
+    trip_data['route_direction_North'] = 0
+    trip_data['route_direction_West'] = 0
+
   # Create day of week filters
   day_mask = False
   day_of_week = chosen_time_local.day_of_week
@@ -177,7 +172,7 @@ def get_trip_info(route_id:int, direction:str, stop_id:int, chosen_time_local:pd
   scheduled_trips_df = pd.merge(left=merged_stop_times, right=stops_df, how='left', on='stop_id')
 
   # Filter route_id and direction
-  trip_mask = (scheduled_trips_df['route_id'] == route_id) & (scheduled_trips_df['trip_headsign'].str.contains(direction))
+  trip_mask = (scheduled_trips_df['route_id'] == route_id) & (scheduled_trips_df['trip_headsign'] == direction)
   filtered_schedule_df = scheduled_trips_df[trip_mask]
 
   # Filter by stop_id
@@ -294,7 +289,8 @@ def get_trip_info(route_id:int, direction:str, stop_id:int, chosen_time_local:pd
  
   return {
     'next_arrival_time': next_arrival_time,
-    'trip_data' : trip_data
+    'trip_data' : trip_data,
+    'hist_avg_delay': round(hist_avg_delay / 60),
   }
 
 def get_weather_info(arrival_time_utc:pd.Timestamp, forecast:bool=False) -> dict:

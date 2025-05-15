@@ -127,6 +127,8 @@ def predict():
         next_arrival_time = trip_result['next_arrival_time']
         result['next_arrival_time'] = next_arrival_time.strftime('%Y-%m-%d %H:%M')
         result['predicted_time'] = rounded_time.strftime('%Y-%m-%d %H:%M')
+        result['hist_avg_delay'] = trip_result['hist_avg_delay']
+        
         if rounded_time < next_arrival_time:
             result['status'] = 'Early'
         elif rounded_time > next_arrival_time:
