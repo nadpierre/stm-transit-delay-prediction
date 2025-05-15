@@ -66,7 +66,7 @@ def predict():
         now_local = pd.Timestamp.now(tz=LOCAL_TIMEZONE)
         now_utc = now_local.tz_convert(tz=timezone.utc)
         three_days_before_utc = now_utc - pd.Timedelta(days=3)
-        two_weeks_later_utc = now_utc + pd.Timedelta(weeks=2)
+        two_weeks_later_utc = now_utc + pd.Timedelta(weeks=2) # the weather forecast only goes 2 weeks from now
         min_time_utc = min_time_local.tz_convert(tz=timezone.utc)
         two_weeks_later_local = two_weeks_later_utc.tz_convert(tz=LOCAL_TIMEZONE)
 
@@ -136,15 +136,16 @@ def predict():
 
         return jsonify(result)
     except Exception as e:
-        message = 'An error has occured.'
+        # message = 'An error has occured.'
         
-        if hasattr(e, 'message'):
-            message = getattr(e, 'message', repr(e))
+        # if hasattr(e, 'message'):
+        #     message = getattr(e, 'message', repr(e))
 
-        error = {
-            'message': message
-        }
-        return Response(json.dumps(error), status=500, content_type='application/json')
+        # error = {
+        #     'message': message
+        # }
+        # return Response(json.dumps(error), status=500, content_type='application/json')
+        return jsonify(e)
   
 if __name__ == '__main__':
     app.run(host='localhost', port=5000, debug=True)

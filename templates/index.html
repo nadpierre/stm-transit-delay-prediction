@@ -4,15 +4,17 @@
     <title>STM Bus Arrival Time Predictor</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         .loader {
-            border: 16px solid #f3f3f3; /* Light grey */
-            border-top: 16px solid #3498db; /* Blue */
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
             border-radius: 50%;
-            width: 120px;
-            height: 120px;
-            animation: spin 2s linear infinite;
-            }
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
 
         @keyframes spin {
             0% { transform: rotate(0deg); }
@@ -21,25 +23,27 @@
     </style>
 </head>
 <body class="container mt-5">
-    <h1 class="mb-4 text-center">Predict Bus Arrival Time</h1>
+    <h1 class="mb-4 text-center"><i class="fas fa-bus"></i> Predict Bus Arrival Time</h1>
     <form id="predict-form" method="post" action="/predict">
-        <div class="mb-3">
-            <label for="bus-line" class="form-label">Select Bus Line:</label>
-            <select id="bus-line" name="bus-line" class="form-select">
-                <option value="">-- Select Bus Line --</option>
-                {% for line in result.bus_lines %}
-                    <option value="{{ line.route_id }}">{{ line.route_id }} {{line.route_long_name}}</option>
-                {% endfor %}
-            </select>
+        <div class="row mb-3">
+            <div class="col">
+                <label for="bus-line" class="form-label">Select Bus Line:</label>
+                <select id="bus-line" name="bus-line" class="form-select">
+                    <option value="">-- Select Bus Line --</option>
+                    {% for line in result.bus_lines %}
+                        <option value="{{ line.route_id }}">{{ line.route_id }} {{line.route_long_name}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col">
+                <label for="direction" class="form-label">Select Direction:</label>
+                <select name="direction" id="direction" class="form-select">
+                    <option value="">-- Select Direction --</option>
+                </select>
+            </div>
         </div>
-        
-        <div class="mb-3">
-            <label for="direction" class="form-label">Select Direction:</label>
-            <select name="direction" id="direction" class="form-select">
-                <option value="">-- Select Direction --</option>
-            </select>
-        </div>
-        
+
         <div class="mb-3">
             <label for="stop" class="form-label">Select Stop:</label>
             <select id="stop" name="stop" class="form-select">
@@ -52,17 +56,15 @@
             <input type="datetime-local" id="chosen-time" class="form-control" name="chosen-time" min="{{ result.min_time }}" max="{{ result.max_time }}">
         </div>
 
-        <div class="d-grid gap-2 col-6 mx-auto">
-            <button type="submit" class="btn btn-primary">Get Next Arrival</button>
+        <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-clock"></i> Get Next Arrival</button>
         </div>
-        
     </form>
-    
-    <div id="predict-result" class="mx-auto mt-3"></div>
-    
+
+    <div id="predict-result" class="mt-4"></div>
+
     <script type="text/javascript">
         $(document).ready(function() {
-            
             $('#bus-line').on('change', function() {
                 const busLine = $('#bus-line').val();
 
@@ -88,7 +90,7 @@
             $('#direction').on('change', function() {
                 const busLine = $('#bus-line').val();
                 const direction = $(this).val();
-                
+
                 if (busLine && direction) {
                     $.ajax({
                         url: '/get-stops',
@@ -102,39 +104,33 @@
                             });
                         },
                         error: function(xhr, status, error) {
-                            console.error('Error fetching stips', error)
+                            console.error('Error fetching stops', error)
                         }
                     });
                 }
-                  
+
             });
 
             $('#predict-form').on('submit', function(e) {
                 e.preventDefault();
                 $('#predict-result').empty();
-                $('#predict-result').append(`<div class="loader mx-auto"></div>`)
+                $('#predict-result').append(`<div class="loader"></div>`)
                 $.ajax({
                     url: '/predict',
                     type: 'POST',
                     data: $('#predict-form').serialize(),
                     success: function(result) {
-                        let color = null
-                        switch (result.status) {
-                            case 'Early':
-                                color = '#e64e12' // Burnt orange
-                                break;
-                            case 'On Time':
-                                color = 'green'
-                                break;
-                            default:
-                                color = 'red'
-                        }
-                        $('.loader').remove()
-                        $('#predict-result').append(`<div class="alert alert-info" role="alert">The next scheduled arrival time is ${result.next_arrival_time} and the next predicted arrival time is <span style="color: ${color}">${result.predicted_time} (${result.status}).</span></div>`)
+                        $('.loader').remove();
+                        $('#predict-result').append(`<div class="alert alert-info mt-3" role="alert">
+                            <i class="fas fa-check-circle"></i> The next scheduled arrival time is ${result.next_arrival_time} and the predicted arrival time is <strong>${result.predicted_time} (${result.status})</strong>.
+                        </div>`)
+                        $('#predict-result').append(`<div class="alert alert-secondary mt-2" role="alert">
+                            <i class="fas fa-history"></i> Historical average delay for this stop: ${result.average_delay} minutes.
+                        </div>`)
                     },
                     error: function(error) {
                         message = error.responseJSON.message
-                        $('.loader').remove()
+                        $('.loader').remove();
                         $('#predict-result').append(`<div class="alert alert-danger mt-4">${message}</div>`)
                     }
                 })

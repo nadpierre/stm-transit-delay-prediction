@@ -4,7 +4,7 @@ import pandas as pd
 import requests
 
 # Import custom code
-from src.constants import MTL_COORDS, ROOT_DIR, DATA_DIR, DOWNLOAD_DIR, LOCAL_TIMEZONE
+from src.constants import MTL_COORDS, ROOT_DIR, DATA_DIR, DOWNLOAD_DIR, LOCAL_TIMEZONE, logger
 
 # Data folders
 data_path = os.path.join(ROOT_DIR, DATA_DIR)
@@ -111,6 +111,7 @@ def get_bus_stops(bus_line:str, direction:str) -> list:
   return merged_stops_df.to_dict(orient='records')
 
 def get_trip_info(route_id:int, direction:str, stop_id:int, chosen_time_local:pd.Timestamp) -> dict:
+  logger.debug('Chosen date: %s', chosen_time_local)
   trip_data = {}
 
   # Add direction one-hot features
