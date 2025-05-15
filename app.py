@@ -24,9 +24,7 @@ min_time_path = os.path.join(model_dir, 'min_time.pkl')
 model = joblib.load(model_path)
 scaler = joblib.load(scaler_path)
 best_features = joblib.load(best_feat_path)
-#min_time_local = joblib.load(min_time_path)
-# TODO: remove manual timestamp after running notebooks
-min_time_local = pd.Timestamp('2025-05-06 20:35:55-0400')
+min_time_local = joblib.load(min_time_path)
 
 @app.route('/')
 def home():
@@ -137,8 +135,16 @@ def predict():
             result['status'] = 'On Time'
 
         return jsonify(result)
-    except Exception as error:
-        return jsonify(error)
+    except Exception as e:
+        message = 'An error has occured.'
+        
+        if hasattr(e, 'message'):
+            message = getattr(e, 'message', repr(e))
+
+        error = {
+            'message': message
+        }
+        return Response(json.dumps(error), status=500, content_type='application/json')
   
 if __name__ == '__main__':
     app.run(host='localhost', port=5000, debug=True)
