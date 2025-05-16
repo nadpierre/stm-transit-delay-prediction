@@ -106,6 +106,22 @@ def get_bus_stops(bus_line:str, direction:str) -> list:
   
   return merged_stops_df.to_dict(orient='records')
 
+def get_redundant_pairs(df: pd.DataFrame) -> set:
+	'''Get diagonal and lower triangular pairs of correlation matrix'''
+	pairs_to_drop = set()
+	cols = df.columns
+
+	for i in range(df.shape[1]):
+		for j in range(i + 1):
+			pairs_to_drop.add((cols[i], cols[j]))
+	return pairs_to_drop
+
+def get_top_abs_correlations(df):
+	corr_list = df.corr().abs().unstack()
+	labels_to_drop = get_redundant_pairs(df)
+	corr_list = corr_list.drop(labels=labels_to_drop).sort_values(ascending=False)
+	return corr_list[corr_list > 0.9]
+
 def get_trip_info(route_id:int, direction:str, stop_id:int, chosen_time_local:pd.Timestamp) -> dict:
   logger.debug('Chosen date: %s', chosen_time_local)
   trip_data = {}
