@@ -27,8 +27,8 @@
     <form id="predict-form" method="post" action="/predict">
         <div class="row mb-3">
             <div class="col">
-                <label for="bus-line" class="form-label">Select Bus Line:</label>
-                <select id="bus-line" name="bus-line" class="form-select">
+                <label for="bus_line" class="form-label">Select Bus Line:</label>
+                <select id="bus_line" name="bus_line" class="form-select">
                     <option value="">-- Select Bus Line --</option>
                     {% for line in result.bus_lines %}
                         <option value="{{ line.route_id }}">{{ line.route_id }} {{line.route_long_name}}</option>
@@ -52,8 +52,8 @@
         </div>
 
         <div class="mb-3">
-            <label for="chosen-time" class="form-label">Chosen Time:</label>
-            <input type="datetime-local" id="chosen-time" class="form-control" name="chosen-time" min="{{ result.min_time }}" max="{{ result.max_time }}">
+            <label for="chosen_time" class="form-label">Chosen Time:</label>
+            <input type="datetime-local" id="chosen_time" class="form-control" name="chosen_time" min="{{ result.min_time }}" max="{{ result.max_time }}">
         </div>
 
         <div class="d-grid gap-2">
@@ -65,8 +65,8 @@
 
     <script type="text/javascript">
         $(document).ready(function() {
-            $('#bus-line').on('change', function() {
-                const busLine = $('#bus-line').val();
+            $('#bus_line').on('change', function() {
+                const busLine = $('#bus_line').val();
 
                 $.ajax({
                     url: '/get-directions',
@@ -88,7 +88,7 @@
             });
 
             $('#direction').on('change', function() {
-                const busLine = $('#bus-line').val();
+                const busLine = $('#bus_line').val();
                 const direction = $(this).val();
 
                 if (busLine && direction) {

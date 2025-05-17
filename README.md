@@ -2,34 +2,57 @@
 
 ## Introduction
 
-The _Société de transport de Montréal (STM)_ is Montreal’s public transport agency. The network contains four subway lines and 235 bus routes. The STM is one the biggest transit systems in Canada and North America.
+The _Société de transport de Montréal_ (STM) is Montreal’s public transport agency. The network contains four subway lines and 235 bus routes. The STM is one of the biggest transit systems in Canada and North America. Predicting these delays not only helps passengers plan their journeys more effectively but also enables STM to optimize scheduling and resource allocation.
 
 ## Description
 
-The objective of this project is to build a machine learning model that predicts, in seconds, the STM transit delays with the best accuracy.
+The objective of this project is to build a machine learning model that predicts the STM transit delays in seconds with the best accuracy.
 
 ## Dataset
 
+### Source
+
 The data comes from three different sources:
 
-- [STM Website](https://www.stm.info/en/info/networks/bus) to collect the route types through web scraping.
-- [STM General Transit Feed Specification (GTFS)](https://www.stm.info/en/about/developers) to collect the real-time trip updates and schedules.
-- [Open-Meteo API](https://open-meteo.com/en/docs) to collect the weather archive and forecast.
+- [STM Website](https://www.stm.info/en/info/networks/bus): Route types through web scraping.
+- [STM General Transit Feed Specification (GTFS)](https://www.stm.info/en/about/developers): Real-time trip updates and schedules.
+- [Open-Meteo API](https://open-meteo.com/en/docs): Weather archive and forecast.
 
-The cleaned dataset contains a total of 7,530,892 rows and 27 columns.
+### Description
+
+- The cleaned dataset contains a total of 7,530,892 rows and 27 columns.
+- Here are some of the key features collected:
+  - `rt_arrival_time`, `rt_departure_time`: Real-time arrival and departure time
+  - `sch_arrival_time`, `sch_departure_time`: Scheduled arrival and departure time
+  - `stop_sequence`
+  - `stop_lat`, `stop_lon`: Stop coordinates
+  - `temperature_2m`: Air temperature at 2 meters above ground
+  - `relative_humidity_2m`: Relative humidity at 2 meters above ground
+  - `wind_direction_10m`: Wind direction at 10 meters above ground
+  - `wind_speed_10m`: Wind speed at 10 meters above ground
 
 ## Methods & Models
 
 ### Data Preprocessing
 
-- There were extreme delay outliers of -10000 and 50000 seconds, which have been removed.
-- Due to the large volume of data, half on the dataset has been used to calculate the average delay per stop. The other half has been kept for data modeling.
-- Temporal feature extraction was used to engineer features like `time_of_day` or `is_peak_hour`.
+- There were extreme delay outliers of less than -10000 seconds and more than 50000 seconds, which have been removed.
+- Due to the large volume of data, half of the dataset has been used as historical data. The other half was used for data modeling.
+- With the historical data, the average delay per stop per hour was calculated.
+- Temporal features were created like `day_of_week`, `time_of_day`, `is_week_end` and `is_peak_hour`.
 - The categorial features have been encoded with One-Hot Encoding.
+
+### Data splitting
+
+- The train-validation-test split was 80-10-10.
+- To save computation time, 25% of the train set has been used for experimenting and the full train size was used for the final model.
 
 ### Models Tested
 
-The following tree-based regression models have been tested in this project: **XGBoost**, **LightGBM** and **CatBoost**. They have been selected because they are more suitable for high-cardinality, non-linear and mixed data. Also, they have a shorter fitting time for large datasets.
+The following tree-based regression models have been tested in this project: **XGBoost**, **LightGBM** and **CatBoost**. They have been selected because they work great for high-cardinality, non-linear and mixed data. Also, they have a shorter fitting time for large datasets.
+
+### Hyperparameter Tuning
+
+Due to the large volume data, a Randomized Search was performed with a 2-Fold Cross-Validation instead of a Grid Search.
 
 ### Evaluation Metrics
 
@@ -41,24 +64,54 @@ The following tree-based regression models have been tested in this project: **X
 
 ### Feature Optimization
 
-- Interaction features were generated using second degree polynomial features and the best ones have been selected based on Mutual Information Regression.
+- Polynomial feature have been generated and the best ones have been selected based on Mutual Information Regression.
 
 ## Results
 
-- The best performing model is **XGBoost** with a MAE of 58.64, a RMSE of 115.39 and a R² of 0.4526.
-- The higher RMSE compared to MAE suggests that there are some significant prediction errors that influence the overall error metric.
-- The R² is not very high but it's understandable, considering how random transit delays can be (weather, vehicle breakdown, accidents, etc.)
+### Metrics:
+
+| Model    | MAE   | RMSE   | R²     |
+| -------- | ----- | ------ | ------ |
+| Baseline | 71.40 | 138.65 | 0.1959 |
+| XGBoost  | 58.64 | 115.39 | 0.4526 |
+
+### Key Visualizations:
+
+- Residual plot analysis shows a consistent spread with minor variance on extreme values.
+- Prediction vs. Actual plot demonstrates a good fit for typical delay ranges.
+  ![Residual Plot](./images/residual_analysis_xg_reg_final.png)
+- Feature Importance analysis reveals that **historical delay** and **expected trip duration** are major predictors.
+  ![Feature Importance Plot](./images/feature_importances_xg_reg_pruned_tuned.png)
+
+### Error Analysis:
+
+- Underestimation during peak hours, likely due to unaccounted real-time traffic congestion and weather changes that impact transit flow.
+- Overestimation in low-traffic periods suggests room for further temporal feature engineering.
+
+### Model Interpretability:
+
+- SHAP analysis indicates that **historical average delay** and **arrivals per hour** are the most influential features.
+  ![SHAP Barplot](./images/shap_barplot_xg_reg_pruned_tuned.png)
 
 ## Future Improvements
 
-- Add third degree feature interactions
-- Use a weighed and/or a quantile regression model because the extreme delays were underestimated.
-- Insert the data into a database
-- The model is overfitted to the time period the data was collected. It would have been ideal to collect data all year round.
-- If there was a year worth of data, other time-based features like `month` and `is_holiday` could have been added.
-- Adding events (concerts, festivals, sports events) and traffic incidents would enrich the model.
-- The results showed that delay is highly dependent on past performance. Exploring time-series models would have been interesting.
-- Explore advanced ensemble methods or deep learning models.
+- Integrate real-time traffic and incident reports for enhanced delay prediction.
+- Explore **stacked ensemble models** to leverage the strengths of multiple regressors.
+- Implement **dynamic temporal clustering** to better capture varying traffic patterns throughout the day.
+- Include more refined weather data granularity.
+- Explore time-series and deep-learning models.
+- Integrate events (concerts, festivals, sports events).
+- Collect data all year round.
+  - Other time-based features to add would be `month` and `is_holiday`.
+- Insert the data into a database to optimize performance.
+
+## Conclusion
+
+This project successfully demonstrates the application of machine learning for predicting STM transit delays in real time. By leveraging historical transit data, weather information, and stop-level details, the XGBoost Regressor was able to achieve a **MAE of 58.64** and an **RMSE of 115.39**, significantly outperforming the baseline model. These results indicate that machine learning can serve as a powerful tool for optimizing public transit schedules and improving commuter experience.
+
+The analysis identified key predictors such as **historical average delay**, **expected trip duration**, and **arrivals per hour** as the main drivers of delay, providing valuable insights into transit bottlenecks and congestion periods. Error analysis further revealed that model accuracy can be improved during peak hours and low-traffic periods, where predictions were slightly less accurate. This suggests that incorporating **real-time traffic feeds** and more granular **temporal features** could further enhance predictive performance.
+
+Overall, this project not only highlights the feasibility of transit delay prediction but also sets a strong foundation for future enhancements that can benefit both STM operations and public transit users in Montreal.
 
 ## Featured Notebooks
 
@@ -68,46 +121,48 @@ The following tree-based regression models have been tested in this project: **X
 
 ## Project Installation
 
+The STM Transit Delay Prediction model is deployed locally using a Flask API. This allows for real-time predictions of transit delays by making HTTP requests.
+
 1. **Clone the repository**
 
 - Open your terminal or command prompt.
 - Navigate to the directory where you want to install the project.
 - Run the following command to clone the GitHub repository:
-  ```
+  ```bash
   git clone https://github.com/nadpierre/stm-transit-delay-prediction.git
   ```
 
 2. **Create a virtual environment**
 
-   ```
+   ```bash
    cd stm-transit-delay-prediction
    python<version> -m venv <virtual-environment-name>
    ```
 
-   > [!NOTE]
-   > The python version used in this project is 3.13.
+> [!NOTE]
+> The python version used in this project is 3.13.
 
 3. **Activate the virtual environment**
 
 - Activate the virtual environment based on your operating system
-  ```
+  ```bash
   source <venv-folder>/bin/activate
   ```
 
 4. **Install dependencies**
 
 - Navigate to the project directory
-  ```
+  ```bash
   cd <project-directory>
   ```
 - Run the following command to install project dependencies:
-  ```
+  ```bash
   pip install -r requirements.txt
   ```
 
 5. **Import Data**
 
-- Download the zip file from the [following link](https://drive.google.com/file/d/1eXAkEukoViIvppB9rGH-laS75mtNNgbr/view?usp=sharing)
+- Download the zip file from the [following link](https://drive.google.com/file/d/1eXAkEukoViIvppB9rGH-laS75mtNNgbr/view?usp=sharing).
 - Extract the archive.
 - Move the `data` directory to the root of the project.
 
@@ -118,18 +173,44 @@ The following tree-based regression models have been tested in this project: **X
 7. **Import custom python code**
    To avoid the following error `ModuleNotFoundError: No module named <directory_name>`, run the following commands:
 
+   ```bash
+   cd <project-directory>
+   export PYTHONPATH="$PYTHONPATH:$PWD"
    ```
-   set -a
-   source .env
-   ```
+
+   You can also add the project path to your shell configuration file e.g. `$HOME/.bashrc`.
 
 8. **Run the project**
 
 - Execute the following command in the root directory:
-  ```
+  ```bash
   python app.py
   ```
-- Open your browser to `http://127.0.0.1:5000`.
+- Open a web browser to `http://127.0.0.1:5000`.
+
+## API Endpoint
+
+- **POST /predict**
+  - **Description:** Accepts form data with model features and returns the predicted arrival time.
+  - **Example CURL Request:**
+    ```bash
+    curl -H "Content-type: application/x-www-form-urlencoded" \
+    -d "bus_line=12" \
+    -d "direction=Sud" \
+    -d "stop=61564" \
+    -d "chosen_time=2025-05-17T19:03" \
+    -X POST \
+    http://127.0.0.1:5000/predict
+    ```
+  - **Example Response:**
+    ```json
+    {
+      "hist_avg_delay": 0,
+      "next_arrival_time": "2025-05-17 19:04",
+      "predicted_time": "2025-05-17 19:03",
+      "status": "Early"
+    }
+    ```
 
 ## API Key Setup
 
@@ -143,3 +224,14 @@ To run the script `fetch_stm_trip_updates.py` you need an API key from the STM D
 2. Set up API key:
 
 - In the `.env` file, replace the values with your actual API key.
+  ```bash
+  STM_API_KEY="your_stm_api_key_here"
+  ```
+
+## References
+
+- [STM Bus network and schedules explained](https://www.stm.info/en/info/networks/bus-network-and-schedules-enlightened)
+
+## Author
+
+Nadine Pierre - [nadine_pierre@hotmail.com](mailto:nadine_pierre@hotmail.com?subject=STM%20Transit%20Delay%20Project)

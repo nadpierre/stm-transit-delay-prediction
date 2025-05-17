@@ -2,7 +2,6 @@ from datetime import timezone
 from flask import Flask, request, jsonify, render_template, Response
 import joblib
 import json
-import numpy as np
 import os
 import pandas as pd
 import xgboost as xgb
@@ -21,36 +20,6 @@ min_time_path = os.path.join(model_dir, 'min_time.pkl')
 # Load data
 model = joblib.load(model_path)
 min_time_local = joblib.load(min_time_path)
-
-def get_input_matrix(weather_data:dict, trip_data:dict):
-    merged_data = {**weather_data, **trip_data}
-
-    input_data = {
-        'arrivals_per_hour hist_avg_delay' : [merged_data['arrivals_per_hour'] * merged_data['hist_avg_delay']],
-        'arrivals_per_hour route_bearing' : [merged_data['arrivals_per_hour'] * merged_data['route_bearing']],
-        'cloud_cover exp_trip_duration' : [merged_data['cloud_cover'] * merged_data['exp_trip_duration']],
-        'exp_trip_duration relative_humidity_2m': [merged_data['exp_trip_duration'] * merged_data['relative_humidity_2m']],
-        'exp_trip_duration route_bearing' : [merged_data['exp_trip_duration'] * merged_data['route_bearing']],
-        'exp_trip_duration schedule_relationship_Scheduled' : [merged_data['exp_trip_duration'] * merged_data['schedule_relationship_Scheduled']],
-        'exp_trip_duration temperature_2m' : [merged_data['exp_trip_duration'] * merged_data['temperature_2m']],
-        'exp_trip_duration wind_direction_10m' : [merged_data['exp_trip_duration'] * merged_data['wind_direction_10m']],
-        'exp_trip_duration wind_speed_10m' : [merged_data['exp_trip_duration'] * merged_data['wind_speed_10m']],
-        'hist_avg_delay' : [merged_data['hist_avg_delay']],
-        'hist_avg_delay route_bearing' : [merged_data['hist_avg_delay'] * merged_data['route_bearing']],
-        'hist_avg_delay wind_direction_10m' : [merged_data['hist_avg_delay'] * merged_data['wind_speed_10m']],
-        'hist_avg_delay wind_speed_10m' : [merged_data['hist_avg_delay'] * merged_data['wind_speed_10m']],
-        'relative_humidity_2m schedule_relationship_Scheduled' : [merged_data['relative_humidity_2m'] * merged_data['schedule_relationship_Scheduled']],
-        'route_bearing' : [merged_data['route_bearing']],
-        'route_bearing stop_cluster' : [merged_data['route_bearing'] * merged_data['stop_cluster']],
-        'route_bearing temperature_2m' : [merged_data['route_bearing'] * merged_data['temperature_2m']],
-        'route_bearing wind_direction_10m' : [merged_data['route_bearing'] * merged_data['wind_direction_10m']],
-        'route_bearing wind_speed_10m' : [merged_data['route_bearing'] * merged_data['wind_speed_10m']],
-        'schedule_relationship_Scheduled temperature_2m': [merged_data['schedule_relationship_Scheduled'] * merged_data['temperature_2m']]
-    }
-    
-    # Create input matrix
-    input_df = pd.DataFrame(input_data)
-    return xgb.DMatrix(input_df, enable_categorical=False)
 
 @app.route('/')
 def home():
@@ -79,10 +48,10 @@ def get_stops():
 def predict():
     try:
         # Get data from form
-        route_id = int(request.form['bus-line'])
+        route_id = int(request.form['bus_line'])
         direction = request.form['direction']
         stop_id = int(request.form['stop'])
-        chosen_time_str = request.form['chosen-time']
+        chosen_time_str = request.form['chosen_time']
 
         # Format arrival date
         chosen_time_local = pd.Timestamp(chosen_time_str, tz=LOCAL_TIMEZONE)
@@ -137,15 +106,46 @@ def predict():
 
         return jsonify(result)
     except Exception as e:
-        message = 'An error has occured.'
+        # message = 'An error has occured.'
         
-        if hasattr(e, 'message'):
-            message = getattr(e, 'message', repr(e))
+        # if hasattr(e, 'message'):
+        #     message = getattr(e, 'message', repr(e))
 
-        error = {
-            'message': message
-        }
-        return Response(json.dumps(error), status=500, content_type='application/json')
+        # error = {
+        #     'message': message
+        # }
+        # return Response(json.dumps(error), status=500, content_type='application/json')
+        return jsonify(e)
+    
+def get_input_matrix(weather_data:dict, trip_data:dict):
+    merged_data = {**weather_data, **trip_data}
+
+    input_data = {
+        'arrivals_per_hour hist_avg_delay' : [merged_data['arrivals_per_hour'] * merged_data['hist_avg_delay']],
+        'arrivals_per_hour route_bearing' : [merged_data['arrivals_per_hour'] * merged_data['route_bearing']],
+        'cloud_cover exp_trip_duration' : [merged_data['cloud_cover'] * merged_data['exp_trip_duration']],
+        'exp_trip_duration relative_humidity_2m': [merged_data['exp_trip_duration'] * merged_data['relative_humidity_2m']],
+        'exp_trip_duration route_bearing' : [merged_data['exp_trip_duration'] * merged_data['route_bearing']],
+        'exp_trip_duration schedule_relationship_Scheduled' : [merged_data['exp_trip_duration'] * merged_data['schedule_relationship_Scheduled']],
+        'exp_trip_duration temperature_2m' : [merged_data['exp_trip_duration'] * merged_data['temperature_2m']],
+        'exp_trip_duration wind_direction_10m' : [merged_data['exp_trip_duration'] * merged_data['wind_direction_10m']],
+        'exp_trip_duration wind_speed_10m' : [merged_data['exp_trip_duration'] * merged_data['wind_speed_10m']],
+        'hist_avg_delay' : [merged_data['hist_avg_delay']],
+        'hist_avg_delay route_bearing' : [merged_data['hist_avg_delay'] * merged_data['route_bearing']],
+        'hist_avg_delay wind_direction_10m' : [merged_data['hist_avg_delay'] * merged_data['wind_speed_10m']],
+        'hist_avg_delay wind_speed_10m' : [merged_data['hist_avg_delay'] * merged_data['wind_speed_10m']],
+        'relative_humidity_2m schedule_relationship_Scheduled' : [merged_data['relative_humidity_2m'] * merged_data['schedule_relationship_Scheduled']],
+        'route_bearing' : [merged_data['route_bearing']],
+        'route_bearing stop_cluster' : [merged_data['route_bearing'] * merged_data['stop_cluster']],
+        'route_bearing temperature_2m' : [merged_data['route_bearing'] * merged_data['temperature_2m']],
+        'route_bearing wind_direction_10m' : [merged_data['route_bearing'] * merged_data['wind_direction_10m']],
+        'route_bearing wind_speed_10m' : [merged_data['route_bearing'] * merged_data['wind_speed_10m']],
+        'schedule_relationship_Scheduled temperature_2m': [merged_data['schedule_relationship_Scheduled'] * merged_data['temperature_2m']]
+    }
+    
+    # Create input matrix
+    input_df = pd.DataFrame(input_data)
+    return xgb.DMatrix(input_df, enable_categorical=False)
   
 if __name__ == '__main__':
     app.run(host='localhost', port=5000, debug=True)
