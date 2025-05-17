@@ -23,7 +23,7 @@ The cleaned dataset contains a total of 7,530,892 rows and 27 columns.
 ### Data Preprocessing
 
 - There were extreme delay outliers of -10000 and 50000 seconds, which have been removed.
-- Due to the large volume of data, the majority has been used as past data, to calculate the average delay per stop. The most recent 1.5 Million rows have been kept for data modeling.
+- Due to the large volume of data, half on the dataset has been used to calculate the average delay per stop. The other half has been kept for data modeling.
 - Temporal feature extraction was used to engineer features like `time_of_day` or `is_peak_hour`.
 - The categorial features have been encoded with One-Hot Encoding.
 
@@ -38,6 +38,10 @@ The following tree-based regression models have been tested in this project: **X
 - Coefficient of Determination (R²)
 - Feature Importances
 - SHapley Additive exPlanations (SHAP) analysis for interpretability
+
+### Feature Optimization
+
+- Interaction features were generated using second degree polynomial features and the best ones have been selected based on Mutual Information Regression.
 
 ## Results
 
