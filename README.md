@@ -41,20 +41,16 @@ The following tree-based regression models have been tested in this project: **X
 
 ## Results
 
-- The best performing model is **CatBoost** with a MAE of 64.32, a RMSE of 127.06 and a R² of 0.3625.
+- The best performing model is **XGBoost** with a MAE of 58.64, a RMSE of 115.39 and a R² of 0.4526.
 - The higher RMSE compared to MAE suggests that there are some significant prediction errors that influence the overall error metric.
-- The R² is not very good but understandable, considering how random transit delays can be.
-- The top 5 most important features are:
-  - Expected trip duration
-  - Historical average delay
-  - Stop location
-  - Temperature
-  - Wind direction
+- The R² is not very high but it's understandable, considering how random transit delays can be (weather, vehicle breakdown, accidents, etc.)
 
 ## Future Improvements
 
+- Add third degree feature interactions
+- Use a weighed and/or a quantile regression model because the extreme delays were underestimated.
 - Insert the data into a database
-- The model is overfitted to the time period the data was collected (from April 27th to May 8th). It would have been ideal to collect data all year round.
+- The model is overfitted to the time period the data was collected. It would have been ideal to collect data all year round.
 - If there was a year worth of data, other time-based features like `month` and `is_holiday` could have been added.
 - Adding events (concerts, festivals, sports events) and traffic incidents would enrich the model.
 - The results showed that delay is highly dependent on past performance. Exploring time-series models would have been interesting.
