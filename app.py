@@ -54,11 +54,9 @@ def predict():
         stop_id = int(request.form['stop'])
         chosen_time_str = request.form['chosen_time']
 
-        # Format arrival date
+        # Get dates
         chosen_time_local = pd.Timestamp(chosen_time_str, tz=LOCAL_TIMEZONE)
         chosen_time_utc = chosen_time_local.tz_convert(tz=timezone.utc)
-
-        # Get dates
         now_local = pd.Timestamp.now(tz=LOCAL_TIMEZONE)
         now_utc = now_local.tz_convert(tz=timezone.utc)
         three_days_before_utc = now_utc - pd.Timedelta(days=3)
@@ -66,20 +64,14 @@ def predict():
         min_time_utc = min_time_local.tz_convert(tz=timezone.utc)
         two_weeks_later_local = two_weeks_later_utc.tz_convert(tz=LOCAL_TIMEZONE)
 
-        # Get weather data
-        weather_data = {}
+        # Do not allow time earlier than the minimum date of the preprocessed data and later than two weeks from now
         if (chosen_time_utc < min_time_utc) | (chosen_time_utc > two_weeks_later_utc):
             dt_format = '%Y-%m-%d'
             error = {
                 'message': f'The date should not be earlier than {min_time_local.strftime(dt_format)} or later than {two_weeks_later_local.strftime(dt_format)}'
             }
             return Response(json.dumps(error), status=400, content_type='application/json')
-        else:
-            if chosen_time_utc <= three_days_before_utc:
-                weather_data = get_weather_info(chosen_time_utc)
-            elif chosen_time_utc <= two_weeks_later_utc:
-                weather_data = get_weather_info(chosen_time_utc, forecast=True)
-        
+
         # Get trip data
         trip_result = get_trip_info(route_id, direction, stop_id, chosen_time_local)
 
@@ -90,11 +82,20 @@ def predict():
             return Response(json.dumps(error), status=404, content_type='application/json')
       
         trip_data = trip_result['trip_data']
+        next_arrival_time = trip_result['next_arrival_time']
+        next_arrival_time_utc = next_arrival_time.tz_convert(tz=timezone.utc)
+
+        # Get weather data
+        weather_data = {}
+        if next_arrival_time_utc <= three_days_before_utc:
+            weather_data = get_weather_info(next_arrival_time_utc)
+        elif next_arrival_time_utc <= two_weeks_later_utc:
+            weather_data = get_weather_info(next_arrival_time_utc, forecast=True)
 
         # Make prediction
         input_df = get_input_matrix(weather_data, trip_data)
         prediction = model.predict(input_df)[0]
-        predicted_time = chosen_time_local + pd.Timedelta(seconds=prediction)
+        predicted_time = next_arrival_time + pd.Timedelta(seconds=prediction)
         rounded_predicted_time = predicted_time.round('min')
         predicted_time_str = rounded_predicted_time.strftime('%Y-%m-%d %H:%M')
 
@@ -105,10 +106,10 @@ def predict():
         weathercode = int(weather_data['weathercode'])
         weather_condition = WEATHER_CONDITIONS[weathercode]
         temperature = weather_data['temperature_2m']
-        result['weather'] = f'{weather_condition} with a temperature of {temperature}°C'   
+        result['weather_condition'] = weather_condition
+        result['temperature'] = temperature
         
         ## Trip data
-        next_arrival_time = trip_result['next_arrival_time']
         rounded_next_arrival_time = next_arrival_time.round('min')
         next_arrival_time_str = rounded_next_arrival_time.strftime('%Y-%m-%d %H:%M')
         result['next_arrival_time'] = next_arrival_time_str

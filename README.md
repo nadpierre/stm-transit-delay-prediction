@@ -211,21 +211,22 @@ The STM Transit Delay Prediction model is deployed locally using a Flask API. Th
   - **Example CURL Request:**
     ```bash
     curl -H "Content-type: application/x-www-form-urlencoded" \
-    -d "bus_line=12" \
-    -d "direction=Sud" \
-    -d "stop=61564" \
-    -d "chosen_time=2025-05-17T19:03" \
+    -d "bus_line=30" \
+    -d "direction=Nord" \
+    -d "stop=61153" \
+    -d "chosen_time=2025-05-18T11:48" \
     -X POST \
     http://127.0.0.1:5000/predict
     ```
   - **Example Response:**
     ```json
     {
-      "hist_avg_delay": 0,
-      "next_arrival_time": "2025-05-17 19:04",
-      "predicted_time": "2025-05-17 19:04",
+      "hist_avg_delay": -1,
+      "next_arrival_time": "2025-05-18 12:15",
+      "predicted_time": "2025-05-18 12:15",
       "status": "On Time",
-      "weather": "Light drizzle with a temperature of 16.1°C"
+      "temperature": 17.7,
+      "weather_condition": "Overcast"
     }
     ```
 
