@@ -223,8 +223,9 @@ The STM Transit Delay Prediction model is deployed locally using a Flask API. Th
     {
       "hist_avg_delay": 0,
       "next_arrival_time": "2025-05-17 19:04",
-      "predicted_time": "2025-05-17 19:03",
-      "status": "Early"
+      "predicted_time": "2025-05-17 19:04",
+      "status": "On Time",
+      "weather": "Light drizzle with a temperature of 16.1°C"
     }
     ```
 

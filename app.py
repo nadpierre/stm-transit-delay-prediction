@@ -127,7 +127,8 @@ def predict():
         return jsonify(result)
     except Exception as e:
         logging.error('An error occured: %s', repr(e))
-        return Response(json.dumps(error), status=500, content_type='application/json')
+       
+        return Response(json.dumps({'message': 'An error occured.'}), status=500, content_type='application/json')
     
 def get_input_matrix(weather_data:dict, trip_data:dict):
     merged_data = {**weather_data, **trip_data}

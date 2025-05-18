@@ -1,7 +1,9 @@
+import logging
 import math
 import os
 import pandas as pd
 import requests
+import time
 
 # Import custom code
 from src.constants import MTL_COORDS, LOCAL_TIMEZONE
@@ -28,18 +30,31 @@ def fetch_weather(start_date:str, end_date:str, attribute_list:list[str], foreca
   )
   
   weather_list = []
-  response = requests.get(weather_url)
+  # Do 5 attempts in case of connection timeout error
+  max_retries = 5
+  backoff_factor = 2
+  timeout = 10
 
-  if response.ok :
-    data = response.json()
-    if 'hourly' in data.keys():
-      for i in range(len(data['hourly']['time'])):
-        weather = {}
-        weather['time'] = data['hourly']['time'][i]
-        for attribute in attribute_list:
-          weather[attribute] = data['hourly'][attribute][i]
-        weather_list.append(weather)
-        
+  for attempt in range(1, max_retries + 1):
+    try:
+      response = requests.get(weather_url, timeout=timeout)
+      if response.ok :
+        data = response.json()
+        if 'hourly' in data.keys():
+          for i in range(len(data['hourly']['time'])):
+            weather = {}
+            weather['time'] = data['hourly']['time'][i]
+            for attribute in attribute_list:
+              weather[attribute] = data['hourly'][attribute][i]
+            weather_list.append(weather)
+      break # exit loop if attempt is successful
+    except requests.exceptions.RequestException as e:
+      wait = backoff_factor ** attempt
+      logging.error(f'Attempt {attempt} failed: {e}. Retrying in {wait} seconds...')
+      time.sleep(wait)
+  else:
+      logging.error('All retry attempts failed. Consider logging the error or alerting the system administrator.')
+     
   return weather_list
 
 def get_redundant_pairs(df: pd.DataFrame) -> set:

@@ -1,12 +1,13 @@
 from datetime import datetime, timezone
 from dotenv import load_dotenv
 from google.transit import gtfs_realtime_pb2
+import logging
 import os
 import requests
 import time
 
 # Import custom code
-from src.constants import ROOT_DIR, DATA_DIR, API_DIR, logger
+from src.constants import ROOT_DIR, DATA_DIR, API_DIR
 from src.helper_functions import export_to_csv
 
 csv_path = os.path.join(ROOT_DIR, DATA_DIR, API_DIR, 'fetched_stm_trip_updates.csv')
@@ -58,7 +59,7 @@ for attempt in range(1, max_retries + 1):
     break # exit loop if attempt is successful
   except requests.exceptions.RequestException as e:
     wait = backoff_factor ** attempt
-    logger.error(f'Attempt {attempt} failed: {e}. Retrying in {wait} seconds...')
+    logging.error(f'Attempt {attempt} failed: {e}. Retrying in {wait} seconds...')
     time.sleep(wait)
 else:
-  logger.error('All retry attempts failed. Consider logging the error or alerting the system administrator.')
+  logging.error('All retry attempts failed. Consider logging the error or alerting the system administrator.')
