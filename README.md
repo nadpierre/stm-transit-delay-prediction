@@ -24,7 +24,7 @@ The data comes from three different sources:
 - Here are some of the key features collected:
   - `rt_arrival_time`, `rt_departure_time`: Real-time arrival and departure time
   - `sch_arrival_time`, `sch_departure_time`: Scheduled arrival and departure time
-  - `stop_sequence`
+  - `stop_sequence`: Sequence of a stop, for ordering
   - `stop_lat`, `stop_lon`: Stop coordinates
   - `temperature_2m`: Air temperature at 2 meters above ground
   - `relative_humidity_2m`: Relative humidity at 2 meters above ground
@@ -37,9 +37,14 @@ The data comes from three different sources:
 
 - There were extreme delay outliers of less than -10000 seconds and more than 50000 seconds, which have been removed.
 - Due to the large volume of data, half of the dataset has been used as historical data. The other half was used for data modeling.
-- With the historical data, the average delay per stop per hour was calculated.
-- Temporal features were created like `day_of_week`, `time_of_day`, `is_week_end` and `is_peak_hour`.
 - The categorial features have been encoded with One-Hot Encoding.
+- The stop coordinated have been grouped with K-Means clustering.
+
+### Feature Engineering
+
+- Temporal features were created like `day_of_week`, `time_of_day`, `is_week_end` and `is_peak_hour`.
+- With the historical data, the average delay per stop per hour was calculated.
+- Other trip-based featured have been created like `trip_progression`, `exp_trip_duration` (expected trip duration), `stop_distance` (from previous stop), `arrivals_per_hour` and `route_bearing`.
 
 ### Data splitting
 
@@ -119,9 +124,11 @@ Overall, this project not only highlights the feasibility of transit delay predi
 - [Data Preprocessing](./notebooks/data_preprocessing.ipynb)
 - [Data Modeling](./notebooks/data_modeling.ipynb)
 
-## Project Installation
+## Deployment
 
 The STM Transit Delay Prediction model is deployed locally using a Flask API. This allows for real-time predictions of transit delays by making HTTP requests.
+
+### How to Run:
 
 1. **Clone the repository**
 
@@ -171,6 +178,7 @@ The STM Transit Delay Prediction model is deployed locally using a Flask API. Th
 - Copy the file `.env-sample` and rename it `.env`
 
 7. **Import custom python code**
+
    To avoid the following error `ModuleNotFoundError: No module named <directory_name>`, run the following commands:
 
    ```bash
@@ -180,7 +188,7 @@ The STM Transit Delay Prediction model is deployed locally using a Flask API. Th
 
    You can also add the project path to your shell configuration file e.g. `$HOME/.bashrc`.
 
-8. **Run the project**
+8. **Run the Flask application**
 
 - Execute the following command in the root directory:
   ```bash
@@ -188,7 +196,7 @@ The STM Transit Delay Prediction model is deployed locally using a Flask API. Th
   ```
 - Open a web browser to `http://127.0.0.1:5000`.
 
-## API Endpoint
+### API Endpoint
 
 - **POST /predict**
   - **Description:** Accepts form data with model features and returns the predicted arrival time.
@@ -212,7 +220,25 @@ The STM Transit Delay Prediction model is deployed locally using a Flask API. Th
     }
     ```
 
-## API Key Setup
+### Monitoring and Logging
+
+The Flask application implements basic logging to track API requests and responses for monitoring and debugging purposes:
+
+- **Request Logging:** Every incoming request is logged with timestamp, route ID, stop ID, and expected arrival time.
+- **Response Logging:** The predicted delay and response time are captured for performance analysis.
+- **Error Logging:** Any exceptions or errors during API calls are logged with stack traces for easier debugging.
+
+The application uses Python's built-in `logging` module for structured logging. The log levels used are `DEBUG`, `INFO` and `ERROR`.
+
+Logs are stored in the file `stm_api_errors.log` at the root of the project.
+
+Example of a log entry:
+
+```log
+2025-05-17 22:04:38 root [INFO] /predict - Route: 47 | Direction: Ouest | Stop: 52419 | Time: 2025-05-17T21:49 | Delay: 40.76
+```
+
+### API Key Setup
 
 To run the script `fetch_stm_trip_updates.py` you need an API key from the STM Developer Hub.
 
@@ -231,7 +257,5 @@ To run the script `fetch_stm_trip_updates.py` you need an API key from the STM D
 ## References
 
 - [STM Bus network and schedules explained](https://www.stm.info/en/info/networks/bus-network-and-schedules-enlightened)
-
-## Author
-
-Nadine Pierre - [nadine_pierre@hotmail.com](mailto:nadine_pierre@hotmail.com?subject=STM%20Transit%20Delay%20Project)
+- [Official GTFS Documentation](https://gtfs.org/documentation/overview/)
+- [GTFS Repository](https://github.com/google/transit/blob/master/gtfs/spec/en/reference.md)

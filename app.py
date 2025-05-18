@@ -2,6 +2,7 @@ from datetime import timezone
 from flask import Flask, request, jsonify, render_template, Response
 import joblib
 import json
+import logging
 import os
 import pandas as pd
 import xgboost as xgb
@@ -81,6 +82,13 @@ def predict():
         
         # Get trip data
         trip_result = get_trip_info(route_id, direction, stop_id, chosen_time_local)
+
+        if not trip_result:
+            error = {
+                'message': 'There are no arrivals after this time.'
+            }
+            return Response(json.dumps(error), status=404, content_type='application/json')
+      
         trip_data = trip_result['trip_data']
 
         # Make prediction
@@ -88,13 +96,15 @@ def predict():
         prediction = model.predict(input_df)[0]
         predicted_time = chosen_time_local + pd.Timedelta(seconds=prediction)
         rounded_predicted_time = predicted_time.round('min')
+        predicted_time_str = rounded_predicted_time.strftime('%Y-%m-%d %H:%M')
 
         # Send results
         result = {}
         next_arrival_time = trip_result['next_arrival_time']
         rounded_next_arrival_time = next_arrival_time.round('min')
-        result['next_arrival_time'] = next_arrival_time.strftime('%Y-%m-%d %H:%M')
-        result['predicted_time'] = rounded_predicted_time.strftime('%Y-%m-%d %H:%M')
+        next_arrival_time_str = rounded_next_arrival_time.strftime('%Y-%m-%d %H:%M')
+        result['next_arrival_time'] = next_arrival_time_str
+        result['predicted_time'] = predicted_time_str
         result['hist_avg_delay'] = trip_result['hist_avg_delay']
         
         if rounded_predicted_time < rounded_next_arrival_time:
@@ -103,19 +113,13 @@ def predict():
             result['status'] = 'Late'
         else:
             result['status'] = 'On Time'
+        
+        logging.info('/predict - Route: %d | Direction: %s | Stop: %d | Time: %s | Delay: %s', route_id, direction, stop_id, chosen_time_str, round(prediction, 2))
 
         return jsonify(result)
     except Exception as e:
-        # message = 'An error has occured.'
-        
-        # if hasattr(e, 'message'):
-        #     message = getattr(e, 'message', repr(e))
-
-        # error = {
-        #     'message': message
-        # }
-        # return Response(json.dumps(error), status=500, content_type='application/json')
-        return jsonify(e)
+        logging.error('An error occured: %s', repr(e))
+        return Response(json.dumps(error), status=500, content_type='application/json')
     
 def get_input_matrix(weather_data:dict, trip_data:dict):
     merged_data = {**weather_data, **trip_data}

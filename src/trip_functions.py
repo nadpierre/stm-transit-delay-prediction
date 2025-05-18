@@ -1,10 +1,11 @@
 import joblib
+import logging
 import os
 import pandas as pd
 import random
 
 # Import custom code
-from src.constants import ROOT_DIR, DATA_DIR, MODELS_DIR, DOWNLOAD_DIR, LOCAL_TIMEZONE, logger
+from src.constants import ROOT_DIR, DATA_DIR, MODELS_DIR, DOWNLOAD_DIR, LOCAL_TIMEZONE
 from src.helper_functions import fetch_weather, parse_gtfs_time, get_route_bearing
 
 # File paths
@@ -132,6 +133,9 @@ def get_trip_info(route_id:int, direction:str, stop_id:int, chosen_time_local:pd
   next_arrivals_filter = filtered_by_stop_df['sch_arrival_time'] >= filtered_by_stop_df['chosen_time']
   next_arrivals = filtered_by_stop_df[next_arrivals_filter].sort_values('sch_arrival_time')
 
+  if len(next_arrivals) == 0:
+    return {}
+
   # Get next arrival
   next_arrival = next_arrivals.head(1).squeeze()
   next_trip_id = int(next_arrival['trip_id'])
@@ -153,7 +157,7 @@ def get_trip_info(route_id:int, direction:str, stop_id:int, chosen_time_local:pd
   # Add route bearing
   bearing = get_route_bearing(dest_lon, origin_lon, dest_lat, origin_lat)
   trip_data['route_bearing'] = bearing
-  
+
   # Add expected trip duration
   trip_start = current_trip['sch_arrival_time'].min()
   trip_end = current_trip['sch_arrival_time'].max()
@@ -173,7 +177,7 @@ def get_trip_info(route_id:int, direction:str, stop_id:int, chosen_time_local:pd
   # Add schedule_relationship one-hot value (at random)
   sch_rel = random.choices([1, 0], weights=sch_rel_weights.values(), k=1)[0]
   trip_data['schedule_relationship_Scheduled'] = sch_rel
- 
+
   return {
     'next_arrival_time': next_arrival_time,
     'trip_data' : trip_data,

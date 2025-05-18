@@ -11,7 +11,7 @@ MODELS_DIR = 'models'
 LOG_FILE = os.path.join(ROOT_DIR, 'stm_api_errors.log')
 
 # Logger
-logger = logging.getLogger('stm.delay_prediction')
+logging.getLogger('stm.delay_prediction')
 logging.basicConfig(
   filename=LOG_FILE,
   level=logging.DEBUG,
