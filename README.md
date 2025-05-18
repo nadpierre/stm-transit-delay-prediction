@@ -6,16 +6,16 @@ The _Société de transport de Montréal_ (STM) is Montreal’s public transport
 
 ## Description
 
-The objective of this project is to build a machine learning model that predicts the STM transit delays in seconds with the best accuracy.
+The goal of this project is to build a machine learning model that predicts the STM transit delays in seconds with the best accuracy.
 
 ## Dataset
 
 ### Source
 
-The data comes from three different sources:
+The data was collected from April 27<sup>th</sup> to May 8<sup>th</sup>. It comes from three different sources:
 
-- [STM Website](https://www.stm.info/en/info/networks/bus): Route types through web scraping.
-- [STM General Transit Feed Specification (GTFS)](https://www.stm.info/en/about/developers): Real-time trip updates and schedules.
+- [STM Bus Lines Web Page](https://www.stm.info/en/info/networks/bus): Route types collected with web scraping.
+- [STM General Transit Feed Specification (GTFS)](https://www.stm.info/en/about/developers): Real-time trip updates and schedules fetched hourly.
 - [Open-Meteo API](https://open-meteo.com/en/docs): Weather archive and forecast.
 
 ### Description
@@ -35,7 +35,11 @@ The data comes from three different sources:
 
 ### Data Preprocessing
 
-- There were extreme delay outliers of less than -10000 seconds and more than 50000 seconds, which have been removed.
+- Handle outliers:
+  ![Delay Distribution](./images/delay_histogram.png)
+  - There were extreme delay outliers of less than -13500 seconds (3 hours 45 minutes) and more than 55000 seconds (15 hours).
+  - The delays that were greater of equal to the expected trip duration were removed, because it's most likely a cancelled trip or a rare event.
+  - In order to right-skewed distribution, the delays equal or lesser than the quarter of the expected trip duration have been removed.
 - Due to the large volume of data, half of the dataset has been used as historical data. The other half was used for data modeling.
 - The categorial features have been encoded with One-Hot Encoding.
 
@@ -49,19 +53,12 @@ The data comes from three different sources:
 ### Data splitting
 
 - The train-validation-test split was 80-10-10.
-- 25% of the train set has been used for faster experimenting.
+- 25% of the train set has been used for faster experimenting. The full train size was used for the final model.
 - In order to preserve the distribution in the sample, stratified sampling based on delay quantiles was applied.
-- The full train size was used for the final model.
 
 ### Models Tested
 
-The following tree-based regression models have been tested in this project:
-
-- **XGBoost**
-- **LightGBM**
-- **CatBoost**
-
-They have been selected because they work great for high-cardinality, non-linear and mixed data. Also, they have a shorter fitting time for large datasets.
+The following tree-based regression models have been tested in this project: **XGBoost**, **LightGBM** and **CatBoost**. They have been selected because they work great for high-cardinality, non-linear and mixed data. Also, they have a shorter fitting time for large datasets.
 
 ### Hyperparameter Tuning
 
@@ -90,16 +87,14 @@ Polynomial features have been generated and the best ones have been selected bas
 
 ### Key Visualizations:
 
+![Residual Plot](./images/residual_analysis_xg_reg_final.png)
+
 - Prediction vs. Actual plot demonstrates a good fit for typical delay ranges.
 - Residual plot shows increase of variance for higher predicted delays (heteroscedasticity) and systematic large delay underestimation.
-  ![Residual Plot](./images/residual_analysis_xg_reg_final.png)
+
+![Feature Importance Plot](./images/feature_importances_xg_reg_pruned_tuned.png)
+
 - Feature Importance analysis reveals that **historical delay** and **arrivals per hour** are major predictors.
-  ![Feature Importance Plot](./images/feature_importances_xg_reg_pruned_tuned.png)
-
-### Error Analysis:
-
-- Underestimation during peak hours, likely due to unaccounted real-time traffic congestion and weather changes that impact transit flow.
-- Overestimation in low-traffic periods suggests room for further temporal feature engineering.
 
 ### Model Interpretability:
 
