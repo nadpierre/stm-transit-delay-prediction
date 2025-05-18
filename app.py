@@ -8,7 +8,7 @@ import pandas as pd
 import xgboost as xgb
 
 # Import custom code
-from src.constants import LOCAL_TIMEZONE, ROOT_DIR, MODELS_DIR
+from src.constants import LOCAL_TIMEZONE, ROOT_DIR, MODELS_DIR, WEATHER_CONDITIONS
 from src.trip_functions import get_bus_lines, get_bus_directions, get_bus_stops, get_weather_info, get_trip_info
 
 app = Flask(__name__)
@@ -98,8 +98,16 @@ def predict():
         rounded_predicted_time = predicted_time.round('min')
         predicted_time_str = rounded_predicted_time.strftime('%Y-%m-%d %H:%M')
 
-        # Send results
+        # Initialize result JSON
         result = {}
+
+        ## Weather data
+        weathercode = int(weather_data['weathercode'])
+        weather_condition = WEATHER_CONDITIONS[weathercode]
+        temperature = weather_data['temperature_2m']
+        result['weather'] = f'{weather_condition} with a temperature of {temperature}°C'   
+        
+        ## Trip data
         next_arrival_time = trip_result['next_arrival_time']
         rounded_next_arrival_time = next_arrival_time.round('min')
         next_arrival_time_str = rounded_next_arrival_time.strftime('%Y-%m-%d %H:%M')
@@ -128,14 +136,17 @@ def get_input_matrix(weather_data:dict, trip_data:dict):
         'arrivals_per_hour hist_avg_delay' : [merged_data['arrivals_per_hour'] * merged_data['hist_avg_delay']],
         'arrivals_per_hour route_bearing' : [merged_data['arrivals_per_hour'] * merged_data['route_bearing']],
         'cloud_cover exp_trip_duration' : [merged_data['cloud_cover'] * merged_data['exp_trip_duration']],
+        'cloud_cover schedule_relationship_Scheduled': [merged_data['cloud_cover'] * merged_data['schedule_relationship_Scheduled']],
         'exp_trip_duration relative_humidity_2m': [merged_data['exp_trip_duration'] * merged_data['relative_humidity_2m']],
         'exp_trip_duration route_bearing' : [merged_data['exp_trip_duration'] * merged_data['route_bearing']],
         'exp_trip_duration schedule_relationship_Scheduled' : [merged_data['exp_trip_duration'] * merged_data['schedule_relationship_Scheduled']],
+        'exp_trip_duration stop_cluster': [merged_data['exp_trip_duration'] * merged_data['stop_cluster']],
         'exp_trip_duration temperature_2m' : [merged_data['exp_trip_duration'] * merged_data['temperature_2m']],
         'exp_trip_duration wind_direction_10m' : [merged_data['exp_trip_duration'] * merged_data['wind_direction_10m']],
         'exp_trip_duration wind_speed_10m' : [merged_data['exp_trip_duration'] * merged_data['wind_speed_10m']],
         'hist_avg_delay' : [merged_data['hist_avg_delay']],
         'hist_avg_delay route_bearing' : [merged_data['hist_avg_delay'] * merged_data['route_bearing']],
+        'hist_avg_delay stop_cluster': [merged_data['hist_avg_delay'] * merged_data['stop_cluster']],
         'hist_avg_delay wind_direction_10m' : [merged_data['hist_avg_delay'] * merged_data['wind_speed_10m']],
         'hist_avg_delay wind_speed_10m' : [merged_data['hist_avg_delay'] * merged_data['wind_speed_10m']],
         'relative_humidity_2m schedule_relationship_Scheduled' : [merged_data['relative_humidity_2m'] * merged_data['schedule_relationship_Scheduled']],
@@ -144,7 +155,9 @@ def get_input_matrix(weather_data:dict, trip_data:dict):
         'route_bearing temperature_2m' : [merged_data['route_bearing'] * merged_data['temperature_2m']],
         'route_bearing wind_direction_10m' : [merged_data['route_bearing'] * merged_data['wind_direction_10m']],
         'route_bearing wind_speed_10m' : [merged_data['route_bearing'] * merged_data['wind_speed_10m']],
-        'schedule_relationship_Scheduled temperature_2m': [merged_data['schedule_relationship_Scheduled'] * merged_data['temperature_2m']]
+        'schedule_relationship_Scheduled temperature_2m': [merged_data['schedule_relationship_Scheduled'] * merged_data['temperature_2m']],
+        'stop_cluster temperature_2m': [merged_data['stop_cluster'] * merged_data['temperature_2m']],
+        'stop_cluster wind_direction_10m': [merged_data['stop_cluster'] * merged_data['wind_direction_10m']]
     }
     
     # Create input matrix

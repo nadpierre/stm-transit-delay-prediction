@@ -31,7 +31,7 @@ SCHEDULE_RELATIONSHIP = {
   2: 'NoData',
 }
 
-WEATHER_CODES = {
+WEATHER_CONDITIONS = {
   0: 'Clear sky',
   1: 'Mainly clear',
   2: 'Partly cloudy',

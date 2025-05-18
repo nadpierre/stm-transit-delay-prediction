@@ -193,7 +193,8 @@ def get_weather_info(arrival_time_utc:pd.Timestamp, forecast:bool=False) -> dict
     'relative_humidity_2m',
     'temperature_2m',
     'wind_direction_10m',
-    'wind_speed_10m'
+    'wind_speed_10m',
+    'weathercode'
   ]
 
   weather_list = fetch_weather(weather_start_date, weather_start_date, attributes, forecast=forecast)

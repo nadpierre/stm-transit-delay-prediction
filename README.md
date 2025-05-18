@@ -38,26 +38,38 @@ The data comes from three different sources:
 - There were extreme delay outliers of less than -10000 seconds and more than 50000 seconds, which have been removed.
 - Due to the large volume of data, half of the dataset has been used as historical data. The other half was used for data modeling.
 - The categorial features have been encoded with One-Hot Encoding.
-- The stop coordinated have been grouped with K-Means clustering.
 
 ### Feature Engineering
 
 - Temporal features were created like `day_of_week`, `time_of_day`, `is_week_end` and `is_peak_hour`.
 - With the historical data, the average delay per stop per hour was calculated.
 - Other trip-based featured have been created like `trip_progression`, `exp_trip_duration` (expected trip duration), `stop_distance` (from previous stop), `arrivals_per_hour` and `route_bearing`.
+- The stop coordinates have been grouped with K-Means clustering.
 
 ### Data splitting
 
 - The train-validation-test split was 80-10-10.
-- To save computation time, 25% of the train set has been used for experimenting and the full train size was used for the final model.
+- 25% of the train set has been used for faster experimenting.
+- In order to preserve the distribution in the sample, stratified sampling based on delay quantiles was applied.
+- The full train size was used for the final model.
 
 ### Models Tested
 
-The following tree-based regression models have been tested in this project: **XGBoost**, **LightGBM** and **CatBoost**. They have been selected because they work great for high-cardinality, non-linear and mixed data. Also, they have a shorter fitting time for large datasets.
+The following tree-based regression models have been tested in this project:
+
+- **XGBoost**
+- **LightGBM**
+- **CatBoost**
+
+They have been selected because they work great for high-cardinality, non-linear and mixed data. Also, they have a shorter fitting time for large datasets.
 
 ### Hyperparameter Tuning
 
-Due to the large volume data, a Randomized Search was performed with a 2-Fold Cross-Validation instead of a Grid Search.
+To save computation time, a Randomized Search was performed with a 2-Fold Cross-Validation for each model instead of a Grid Search.
+
+### Feature Optimization
+
+Polynomial features have been generated and the best ones have been selected based on Mutual Information Regression.
 
 ### Evaluation Metrics
 
@@ -67,10 +79,6 @@ Due to the large volume data, a Randomized Search was performed with a 2-Fold Cr
 - Feature Importances
 - SHapley Additive exPlanations (SHAP) analysis for interpretability
 
-### Feature Optimization
-
-- Polynomial feature have been generated and the best ones have been selected based on Mutual Information Regression.
-
 ## Results
 
 ### Metrics:
@@ -78,14 +86,14 @@ Due to the large volume data, a Randomized Search was performed with a 2-Fold Cr
 | Model    | MAE   | RMSE   | R²     |
 | -------- | ----- | ------ | ------ |
 | Baseline | 71.40 | 138.65 | 0.1959 |
-| XGBoost  | 58.64 | 115.39 | 0.4526 |
+| XGBoost  | 58.51 | 115.45 | 0.4521 |
 
 ### Key Visualizations:
 
-- Residual plot analysis shows a consistent spread with minor variance on extreme values.
 - Prediction vs. Actual plot demonstrates a good fit for typical delay ranges.
+- Residual plot shows increase of variance for higher predicted delays (heteroscedasticity) and systematic large delay underestimation.
   ![Residual Plot](./images/residual_analysis_xg_reg_final.png)
-- Feature Importance analysis reveals that **historical delay** and **expected trip duration** are major predictors.
+- Feature Importance analysis reveals that **historical delay** and **arrivals per hour** are major predictors.
   ![Feature Importance Plot](./images/feature_importances_xg_reg_pruned_tuned.png)
 
 ### Error Analysis:
@@ -198,7 +206,7 @@ The STM Transit Delay Prediction model is deployed locally using a Flask API. Th
 
 ### API Endpoint
 
-- **POST /predict**
+- **`POST /predict`**
   - **Description:** Accepts form data with model features and returns the predicted arrival time.
   - **Example CURL Request:**
     ```bash
