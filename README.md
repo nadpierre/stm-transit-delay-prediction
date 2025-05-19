@@ -39,16 +39,17 @@ The data was collected from April 27<sup>th</sup> to May 8<sup>th</sup>. It come
   ![Delay Distribution](./images/delay_histogram.png)
   - There were extreme delay outliers of less than -13500 seconds (3 hours 45 minutes) and more than 55000 seconds (15 hours).
   - The delays that were greater of equal to the expected trip duration were removed, because it's most likely a cancelled trip or a rare event.
-  - In order to right-skewed distribution, the delays equal or lesser than the quarter of the expected trip duration have been removed.
+  - In order to preserve the right-skewed distribution, the negative delays equal or lesser than the quarter of the expected trip duration have been removed.
 - Due to the large volume of data, half of the dataset has been used as historical data. The other half was used for data modeling.
-- The categorial features have been encoded with One-Hot Encoding.
+- Temporal feature extraction was used for `day_of_week`, `hour`,`is_week_end` and `is_peak_hour`.
 
 ### Feature Engineering
 
-- Temporal features were created like `day_of_week`, `time_of_day`, `is_week_end` and `is_peak_hour`.
-- With the historical data, the average delay per stop per hour was calculated.
+- Average delay per stop per hour was calculated with the historical data.
+- `time_of_day` categorical feature was created with `hour`.
 - Other trip-based featured have been created like `trip_progression`, `exp_trip_duration` (expected trip duration), `stop_distance` (from previous stop), `arrivals_per_hour` and `route_bearing`.
 - The stop coordinates have been grouped with K-Means clustering.
+  ![Stop Clusters](./images/stop_clusters.png)
 
 ### Data splitting
 
@@ -104,22 +105,17 @@ Polynomial features have been generated and the best ones have been selected bas
 ## Future Improvements
 
 - Integrate real-time traffic and incident reports for enhanced delay prediction.
-- Explore **stacked ensemble models** to leverage the strengths of multiple regressors.
-- Implement **dynamic temporal clustering** to better capture varying traffic patterns throughout the day.
-- Include more refined weather data granularity.
-- Explore time-series and deep-learning models.
 - Integrate events (concerts, festivals, sports events).
-- Collect data all year round.
-  - Other time-based features to add would be `month` and `is_holiday`.
+- Integrate location of cycleways since it can slow down buses.
+- Collect data for a full year and add other time-based features like `month` and `is_holiday`.
 - Insert the data into a database to optimize performance.
+- Explore time-series and deep-learning models.
 
 ## Conclusion
 
-This project successfully demonstrates the application of machine learning for predicting STM transit delays in real time. By leveraging historical transit data, weather information, and stop-level details, the XGBoost Regressor was able to achieve a **MAE of 58.64** and an **RMSE of 115.39**, significantly outperforming the baseline model. These results indicate that machine learning can serve as a powerful tool for optimizing public transit schedules and improving commuter experience.
+This project demonstrates the application of machine learning for predicting STM transit delays in real time. By leveraging historical transit data, weather information, and stop-level details, the XGBoost Regressor was able to achieve a **MAE of 58.51** and an **RMSE of 115.44**, significantly outperforming the baseline model. These results indicate that machine learning can serve as a powerful tool for optimizing public transit schedules and improving commuter experience.
 
-The analysis identified key predictors such as **historical average delay**, **expected trip duration**, and **arrivals per hour** as the main drivers of delay, providing valuable insights into transit bottlenecks and congestion periods. Error analysis further revealed that model accuracy can be improved during peak hours and low-traffic periods, where predictions were slightly less accurate. This suggests that incorporating **real-time traffic feeds** and more granular **temporal features** could further enhance predictive performance.
-
-Overall, this project not only highlights the feasibility of transit delay prediction but also sets a strong foundation for future enhancements that can benefit both STM operations and public transit users in Montreal.
+The analysis identified key predictors such as **historical average delay**, **expected trip duration**, and **arrivals per hour** as the main drivers of delay, providing valuable insights into transit bottlenecks and congestion periods. Overall, this project not only highlights the feasibility of transit delay prediction but also sets a strong foundation for future enhancements that can benefit both STM operations and public transit users in Montreal.
 
 ## Featured Notebooks
 
@@ -201,8 +197,82 @@ The STM Transit Delay Prediction model is deployed locally using a Flask API. Th
 
 ### API Endpoint
 
+- **`POST /get-directions`**
+
+  - **Description** Accepts JSON input with a bus number and returns the directions.
+  - **Example CURL Request:**
+    ```bash
+    curl -H "Content-type: application/json" \
+    -d '{"bus_line": "13"}' \
+    -X POST \
+    http://127.0.0.1:5000/get-directions
+    ```
+  - **Example Response:**
+    ```json
+    [
+      {
+        "direction_en": "North",
+        "direction_fr": "Nord"
+      },
+      {
+        "direction_en": "South",
+        "direction_fr": "Sud"
+      }
+    ]
+    ```
+
+- **`POST /get-stops`**
+
+  - **Description:** Accepts JSON input with bus line and direction and returns all the associated bus stops.
+  - **Example CURL Request:**
+    ```bash
+    curl -H "Content-type: application/json" \
+    -d '{"bus_line": "161", "direction": "Est"}' \
+    -X POST \
+    http://127.0.0.1:5000/get-stops
+    ```
+  - **Example Response:**
+
+    <sub>_Only the first and last few stops are shown for brevity._</sub>
+
+    ```json
+    [
+      {
+        "stop_id": 56338,
+        "stop_name": "Kildare / Westminster",
+        "stop_sequence": 1
+      },
+      {
+        "stop_id": 56345,
+        "stop_name": "Kildare / McMurray",
+        "stop_sequence": 2
+      },
+      {
+        "stop_id": 56348,
+        "stop_name": "Kildare / Melling",
+        "stop_sequence": 3
+      },
+      {
+        "stop_id": 51423,
+        "stop_name": "Van Horne / Jeanne-Mance",
+        "stop_sequence": 43
+      },
+      {
+        "stop_id": 51449,
+        "stop_name": "Van Horne / Waverly",
+        "stop_sequence": 44
+      },
+      {
+        "stop_id": 51648,
+        "stop_name": "Station Rosemont (Rosemont / De Saint-Vallier)",
+        "stop_sequence": 45
+      }
+    ]
+    ```
+
 - **`POST /predict`**
-  - **Description:** Accepts form data with model features and returns the predicted arrival time.
+
+  - **Description:** Accepts form input with model features and returns the predicted arrival time, historical average delay weather condition.
   - **Example CURL Request:**
     ```bash
     curl -H "Content-type: application/x-www-form-urlencoded" \
@@ -227,14 +297,7 @@ The STM Transit Delay Prediction model is deployed locally using a Flask API. Th
 
 ### Monitoring and Logging
 
-The Flask application implements basic logging to track API requests and responses for monitoring and debugging purposes:
-
-- **Request Logging:** Every incoming request is logged with timestamp, route ID, stop ID, and expected arrival time.
-- **Response Logging:** The predicted delay and response time are captured for performance analysis.
-- **Error Logging:** Any exceptions or errors during API calls are logged with stack traces for easier debugging.
-
 The application uses Python's built-in `logging` module for structured logging. The log levels used are `DEBUG`, `INFO` and `ERROR`.
-
 Logs are stored in the file `stm_api_errors.log` at the root of the project.
 
 Example of a log entry:
